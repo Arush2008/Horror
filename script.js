@@ -120,38 +120,68 @@ class VoidOS {
     }
 
     pauseBeforeJumpscare() {
-        console.log('😶 5 seconds of eerie calm before the storm...');
+        console.log('😶 3 seconds of complete silence before the jumpscare...');
         
-        // Stop all glitches for 5 seconds
+        // COMPLETE SILENCE - Stop all glitches and sounds
         this.stopAllGlitches();
+        this.activeGlitches.clear();
         
-        // After 5 seconds of silence, JUMPSCARE!
+        // Stop any background music or sounds
+        if (this.audioLoaded && window.voidAudio) {
+            try {
+                window.voidAudio.stopBackgroundMusic();
+            } catch (e) {
+                console.log('No background music to stop');
+            }
+        }
+        
+        // Clear all intervals
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+            this.glitchInterval = null;
+        }
+        
+        // Reset the screen to completely normal state
+        document.body.style.background = '';
+        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
+        
+        // 3 seconds of COMPLETE SILENCE
         setTimeout(() => {
             this.triggerJumpscare();
-        }, 5000);
+        }, 3000);
     }
 
     stopAllGlitches() {
-        // Clear all visual effects from body
+        // Clear ALL visual effects from body
         document.body.classList.remove(
             'screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 
             'screen-flicker'
         );
         
-        // Remove glitch classes from all elements
-        document.querySelectorAll('.glitch-text, .error-state, .phantom-cursor, .bleeding-text, .warped-element').forEach(el => {
-            el.classList.remove('glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 'warped-element');
+        // Remove glitch classes from ALL elements on the page
+        document.querySelectorAll('*').forEach(el => {
+            el.classList.remove(
+                'glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 
+                'warped-element', 'screen-glitch', 'corruption', 'invert-colors', 
+                'text-scramble', 'screen-flicker'
+            );
         });
         
-        // Reset body transform and background
+        // Reset body transform and background completely
         document.body.style.transform = '';
         document.body.style.background = '';
+        document.body.style.filter = '';
         
-        // Remove any phantom cursors or temporary elements
+        // Remove any phantom cursors or temporary glitch elements
         document.querySelectorAll('.phantom-cursor, .break-fourth-wall').forEach(el => {
             if (el.parentNode) {
                 el.parentNode.removeChild(el);
             }
+        });
+        
+        // Stop any CSS animations on all elements
+        document.querySelectorAll('[style*="animation"]').forEach(el => {
+            el.style.animation = 'none';
         });
         
         // Reset system status to normal
@@ -159,16 +189,19 @@ class VoidOS {
         if (statusEl) {
             statusEl.textContent = 'System: ERROR';
             statusEl.style.background = '#dc2626';
+            statusEl.style.animation = 'none';
         }
         
-        console.log('🧹 All glitches stopped and screen cleaned');
+        console.log('🧹 ALL glitches completely eliminated');
     }
 
     triggerJumpscare() {
         console.log('💀 JUMPSCARE ACTIVATED 💀');
         
-        // EXTREMELY LOUD SCARE SOUND
+        // PLAY YOUR CUSTOM AUDIO (placeholder for when you provide the file)
         if (this.audioLoaded) {
+            // TODO: Replace this with your custom jumpscare audio
+            // For now using the built-in scare sound
             window.voidAudio.playScare(1.0); // MAXIMUM VOLUME
         }
         
@@ -237,6 +270,16 @@ class VoidOS {
     showBlackScreenTransition() {
         console.log('🖤 Black screen transition with scary music...');
         
+        // STOP ALL GLITCHES - ensure completely clean screen
+        this.stopAllGlitches();
+        this.activeGlitches.clear();
+        
+        // Clear any remaining intervals
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+            this.glitchInterval = null;
+        }
+        
         // Create black screen overlay
         const blackScreen = document.createElement('div');
         blackScreen.className = 'black-screen';
@@ -257,7 +300,7 @@ class VoidOS {
         
         document.body.appendChild(blackScreen);
         
-        // Start scary background music
+        // Start scary background music ONLY (no other sounds)
         if (this.audioLoaded) {
             window.voidAudio.playScaryBackgroundMusic(0.4);
         }
@@ -273,26 +316,39 @@ class VoidOS {
         const horrorFace = document.getElementById('horror-face');
         const crashContent = document.querySelector('.crash-content');
         
-        // STOP ALL GLITCHES - Clean final screen
+        // ABSOLUTELY NO GLITCHES - Clean final screen with ONLY background music
         this.stopAllGlitches();
         this.activeGlitches.clear();
+        
+        // Clear ALL intervals to prevent any glitches
         if (this.glitchInterval) {
             clearInterval(this.glitchInterval);
+            this.glitchInterval = null;
         }
+        
+        // Remove any residual glitch classes from the entire page
+        document.querySelectorAll('*').forEach(el => {
+            el.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker', 'glitch-text', 'error-state');
+        });
+        
+        // Reset body completely
+        document.body.style.background = '';
+        document.body.style.transform = '';
+        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
         
         // Hide horror face completely
         horrorFace.style.display = 'none';
         horrorFace.style.opacity = '0';
         
-        // Show corruption message - CLEAN with NO glitches
+        // Show corruption message - COMPLETELY STATIC (no animations)
         crashContent.innerHTML = `
-            <div class="corruption-message">
-                <h1 style="color: #ff0000; font-size: 64px; text-shadow: 0 0 20px #ff0000;">ERROR</h1>
-                <p style="font-size: 24px; color: #ffffff; margin: 20px 0;">YOUR WINDOW HAS BEEN CORRUPTED</p>
-                <p style="font-size: 18px; color: #ffcccc; margin: 20px 0;">System integrity compromised beyond repair</p>
-                <p style="font-size: 16px; color: #ff6666; margin: 20px 0;">All data has been consumed by the void</p>
+            <div class="corruption-message" style="animation: none !important;">
+                <h1 style="color: #ff0000; font-size: 64px; text-shadow: 0 0 20px #ff0000; animation: none !important;">ERROR</h1>
+                <p style="font-size: 24px; color: #ffffff; margin: 20px 0; animation: none !important;">YOUR WINDOW HAS BEEN CORRUPTED</p>
+                <p style="font-size: 18px; color: #ffcccc; margin: 20px 0; animation: none !important;">System integrity compromised beyond repair</p>
+                <p style="font-size: 16px; color: #ff6666; margin: 20px 0; animation: none !important;">All data has been consumed by the void</p>
                 <div style="margin: 40px 0;">
-                    <div style="color: #ff0000; font-family: monospace; font-size: 14px; text-align: left; background: #000; padding: 20px; border: 1px solid #ff0000;">
+                    <div style="color: #ff0000; font-family: monospace; font-size: 14px; text-align: left; background: #000; padding: 20px; border: 1px solid #ff0000; animation: none !important;">
                         ERROR CODE: 0x666DEAD<br>
                         FAULT MODULE: reality.exe<br>
                         MEMORY DUMP: [CORRUPTED]<br>
@@ -300,7 +356,7 @@ class VoidOS {
                         STATUS: BEYOND_SALVATION
                     </div>
                 </div>
-                <button id="restart-btn" style="padding: 20px 40px; font-size: 18px; font-weight: bold; background: #ff0000; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px;">RESTART SYSTEM</button>
+                <button id="restart-btn" style="padding: 20px 40px; font-size: 18px; font-weight: bold; background: #ff0000; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; animation: none !important;">RESTART SYSTEM</button>
             </div>
         `;
         
@@ -326,6 +382,9 @@ class VoidOS {
                 restartBtn.focus();
             }
         }, 100);
+        
+        // Ensure background music continues (ONLY audio on this screen)
+        console.log('🎵 Final screen - only background music, no glitches');
     }
 
     restartSystem() {
