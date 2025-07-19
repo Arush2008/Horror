@@ -174,19 +174,43 @@ class VoidOS {
     showHorrorFace() {
         const horrorFace = document.getElementById('horror-face');
         
-        // Make the horror face MUCH scarier
+        // Make the horror face FULL-SCREEN and TERRIFYING
         horrorFace.innerHTML = `
-            <div class="scary-face">
-                <div class="evil-eyes">👁️‍🗨️👁️‍🗨️</div>
-                <div class="evil-mouth">👹</div>
-                <div class="blood-drip">🩸</div>
+            <div class="fullscreen-horror-face">
+                <div class="blood-overlay"></div>
+                <div class="dark-face">
+                    <div class="hollow-eyes">
+                        <div class="left-eye"></div>
+                        <div class="right-eye"></div>
+                    </div>
+                    <div class="bleeding-mouth"></div>
+                    <div class="scratches"></div>
+                </div>
+                <div class="blood-drips">
+                    <div class="blood-drip" style="left: 20%; animation-delay: 0s;"></div>
+                    <div class="blood-drip" style="left: 40%; animation-delay: 0.2s;"></div>
+                    <div class="blood-drip" style="left: 60%; animation-delay: 0.4s;"></div>
+                    <div class="blood-drip" style="left: 80%; animation-delay: 0.6s;"></div>
+                </div>
+                <div class="horror-text">YOU CANNOT ESCAPE</div>
             </div>
         `;
         
-        // Make horror face visible instantly
-        horrorFace.style.opacity = '1';
-        horrorFace.style.transform = 'scale(1.5)';
-        horrorFace.style.animation = 'horrorPulse 0.1s ease-in-out infinite alternate, shake 0.1s infinite';
+        // Make horror face FULL-SCREEN and visible instantly
+        horrorFace.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 10001 !important;
+            background: #000000 !important;
+            opacity: 1 !important;
+            transform: none !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        `;
     }
 
     showBlackScreenTransition() {
@@ -686,6 +710,17 @@ class VoidOS {
         // Track all interactions for horror progression
         document.addEventListener('click', () => {
             this.trackInteraction();
+            // Play sound on EVERY click for better immersion
+            if (this.audioLoaded && Math.random() < 0.3) {
+                this.playSystemSound();
+            }
+        });
+
+        // Add sound effects to ALL buttons, inputs, and interactive elements
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('button, input, select, textarea, .menu-item, .icon, .taskbar-app')) {
+                this.playSystemSound();
+            }
         });
 
         // Prevent context menu for immersion
@@ -809,6 +844,7 @@ class VoidOS {
             dragOffset.x = e.clientX - windowEl.offsetLeft;
             dragOffset.y = e.clientY - windowEl.offsetTop;
             this.focusWindow(id);
+            this.playSystemSound(); // Sound on window focus
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -840,6 +876,23 @@ class VoidOS {
         // Focus on click
         windowEl.addEventListener('mousedown', () => {
             this.focusWindow(id);
+            this.playSystemSound(); // Sound on window click
+        });
+
+        // Add sound effects to ALL interactive elements inside windows
+        windowEl.addEventListener('click', (e) => {
+            if (e.target.matches('button, input, select, textarea, a, .clickable')) {
+                this.playSystemSound();
+            }
+        });
+
+        // Add sound to input interactions
+        windowEl.addEventListener('keydown', (e) => {
+            if (e.target.matches('input, textarea')) {
+                if (this.audioLoaded && Math.random() < 0.1) { // 10% chance for typing sounds
+                    this.playSystemSound();
+                }
+            }
         });
     }
 
