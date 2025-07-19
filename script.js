@@ -115,6 +115,8 @@ class VoidOS {
             const randomActive = activeGlitchArray[Math.floor(Math.random() * activeGlitchArray.length)];
             this.activateGlitch(randomActive);
         }
+        
+        this.updateSystemStatus();
     }
 
     pauseBeforeJumpscare() {
@@ -150,9 +152,27 @@ class VoidOS {
         }
         
         // Show terrifying creature for less than 1 second
-        const horrorFace = document.getElementById('horror-face');
         const crashScreen = document.getElementById('crash-screen');
         const desktop = document.getElementById('desktop');
+        
+        // Flash intense effects
+        document.body.style.background = '#ff0000';
+        document.body.classList.add('screen-glitch', 'invert-colors');
+        
+        desktop.classList.add('hidden');
+        crashScreen.classList.remove('hidden');
+        
+        // Show horror face first
+        this.showHorrorFace();
+        
+        // Hide the face after 0.8 seconds and show black screen
+        setTimeout(() => {
+            this.showBlackScreenTransition();
+        }, 800);
+    }
+
+    showHorrorFace() {
+        const horrorFace = document.getElementById('horror-face');
         
         // Make the horror face MUCH scarier
         horrorFace.innerHTML = `
@@ -163,22 +183,45 @@ class VoidOS {
             </div>
         `;
         
-        // Flash intense effects
-        document.body.style.background = '#ff0000';
-        document.body.classList.add('screen-glitch', 'invert-colors');
-        
-        desktop.classList.add('hidden');
-        crashScreen.classList.remove('hidden');
-        
         // Make horror face visible instantly
         horrorFace.style.opacity = '1';
         horrorFace.style.transform = 'scale(1.5)';
         horrorFace.style.animation = 'horrorPulse 0.1s ease-in-out infinite alternate, shake 0.1s infinite';
+    }
+
+    showBlackScreenTransition() {
+        console.log('🖤 Black screen transition with scary music...');
         
-        // Hide the face after 0.8 seconds and show corruption message
+        // Create black screen overlay
+        const blackScreen = document.createElement('div');
+        blackScreen.className = 'black-screen';
+        blackScreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            z-index: 10002;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 24px;
+        `;
+        
+        document.body.appendChild(blackScreen);
+        
+        // Start scary background music
+        if (this.audioLoaded) {
+            window.voidAudio.playScaryBackgroundMusic(0.4);
+        }
+        
+        // After 3 seconds, show corruption message
         setTimeout(() => {
+            blackScreen.remove();
             this.showCorruptionScreen();
-        }, 800);
+        }, 3000);
     }
 
     showCorruptionScreen() {
@@ -212,42 +255,18 @@ class VoidOS {
         document.getElementById('restart-btn').addEventListener('click', () => {
             this.restartSystem();
         });
-        
-        // Continue glitching the screen even after crash
-        setInterval(() => {
-            document.body.classList.toggle('screen-glitch');
-        }, 500);
     }
 
     restartSystem() {
-        // Reset everything
-        this.horrorSequenceStarted = false;
-        this.horrorStartTime = null;
-        this.activeGlitches.clear();
-        this.glitchLevel = 0;
+        console.log('🔄 Restarting system completely...');
         
-        if (this.glitchInterval) {
-            clearInterval(this.glitchInterval);
+        // Stop background music
+        if (this.audioLoaded) {
+            window.voidAudio.stopBackgroundMusic();
         }
         
-        // Clear all visual effects
-        document.body.style.background = '';
-        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
-        document.querySelectorAll('.glitch-text, .error-state, .phantom-cursor, .bleeding-text, .warped-element').forEach(el => {
-            el.classList.remove('glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 'warped-element');
-        });
-        
-        // Hide crash screen and show warning screen again
-        document.getElementById('crash-screen').classList.add('hidden');
-        document.getElementById('warning-screen').classList.remove('hidden');
-        document.getElementById('desktop').classList.add('hidden');
-        
-        // Clear all windows
-        this.windows.clear();
-        document.getElementById('windows-container').innerHTML = '';
-        document.getElementById('taskbar-apps').innerHTML = '';
-        
-        this.updateSystemStatus();
+        // Complete page reload for clean restart
+        window.location.reload();
     }
 
     async initializeAudio() {
@@ -314,6 +333,11 @@ class VoidOS {
     }
 
     triggerVisualGlitch() {
+        // PLAY SOUND when visual glitch happens
+        if (this.audioLoaded) {
+            window.voidAudio.playGlitch(0.3);
+        }
+        
         document.body.classList.add('screen-glitch');
         setTimeout(() => document.body.classList.remove('screen-glitch'), 800);
         
@@ -324,7 +348,7 @@ class VoidOS {
 
     triggerAudioGlitch() {
         if (this.audioLoaded) {
-            window.voidAudio.playGlitch();
+            window.voidAudio.playGlitch(0.4);
         }
         
         if (this.activeGlitches.has('audio')) {
@@ -333,6 +357,11 @@ class VoidOS {
     }
 
     triggerTextGlitch() {
+        // PLAY SOUND when text glitches
+        if (this.audioLoaded) {
+            window.voidAudio.playDistortion(0.2);
+        }
+        
         const textElements = document.querySelectorAll('.window-title, .icon-label, .menu-item, #clock');
         const randomElements = Array.from(textElements).sort(() => Math.random() - 0.5).slice(0, 3);
         
@@ -356,6 +385,11 @@ class VoidOS {
     }
 
     triggerUIGlitch() {
+        // PLAY SOUND when UI glitches
+        if (this.audioLoaded) {
+            window.voidAudio.playSystem(0.5);
+        }
+        
         const buttons = document.querySelectorAll('button, .icon, .menu-item');
         const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
         
@@ -364,7 +398,7 @@ class VoidOS {
             const originalHandler = randomButton.onclick;
             randomButton.onclick = () => {
                 if (this.audioLoaded) {
-                    window.voidAudio.playDistortion();
+                    window.voidAudio.playDistortion(0.3);
                 }
                 console.log('System error: Component corrupted');
             };
@@ -381,6 +415,11 @@ class VoidOS {
     }
 
     triggerSystemGlitch() {
+        // PLAY SOUND when system glitches
+        if (this.audioLoaded) {
+            window.voidAudio.playCorruption(0.3);
+        }
+        
         const statuses = ['System: CORRUPTED', 'System: ERROR 666', 'System: VOID', 'System: [REDACTED]', 'System: HELP ME', 'System: NO ESCAPE'];
         const statusEl = document.getElementById('glitch-level');
         const originalStatus = statusEl.textContent;
@@ -402,7 +441,7 @@ class VoidOS {
 
     triggerCorruptionGlitch() {
         if (this.audioLoaded) {
-            window.voidAudio.playCorruption();
+            window.voidAudio.playCorruption(0.4);
         }
         
         document.body.classList.add('corruption');
@@ -415,7 +454,7 @@ class VoidOS {
 
     triggerDistortionGlitch() {
         if (this.audioLoaded) {
-            window.voidAudio.playDistortion();
+            window.voidAudio.playDistortion(0.3);
         }
         
         const elements = document.querySelectorAll('.window, .icon, .menu-item');
@@ -431,6 +470,11 @@ class VoidOS {
     }
 
     triggerFlickerGlitch() {
+        // PLAY SOUND when screen flickers
+        if (this.audioLoaded) {
+            window.voidAudio.playGlitch(0.2);
+        }
+        
         document.body.classList.add('screen-flicker');
         setTimeout(() => document.body.classList.remove('screen-flicker'), 1000);
         
@@ -440,6 +484,11 @@ class VoidOS {
     }
 
     triggerInvertGlitch() {
+        // PLAY SOUND when colors invert
+        if (this.audioLoaded) {
+            window.voidAudio.playDistortion(0.2);
+        }
+        
         document.body.classList.add('invert-colors');
         setTimeout(() => document.body.classList.remove('invert-colors'), 800);
         
@@ -449,6 +498,11 @@ class VoidOS {
     }
 
     triggerScrambleGlitch() {
+        // PLAY SOUND when text scrambles
+        if (this.audioLoaded) {
+            window.voidAudio.playCorruption(0.2);
+        }
+        
         document.body.classList.add('text-scramble');
         setTimeout(() => document.body.classList.remove('text-scramble'), 1500);
         
@@ -458,6 +512,11 @@ class VoidOS {
     }
 
     triggerPhantomGlitch() {
+        // PLAY SOUND when phantom cursor appears
+        if (this.audioLoaded) {
+            window.voidAudio.playWhisper(0.1);
+        }
+        
         const phantomCursor = document.createElement('div');
         phantomCursor.className = 'phantom-cursor';
         phantomCursor.style.cssText = `
@@ -482,7 +541,7 @@ class VoidOS {
 
     triggerWhispersGlitch() {
         if (this.audioLoaded) {
-            window.voidAudio.playWhisper();
+            window.voidAudio.playWhisper(0.3);
         }
         this.fourthWallBreak();
         
@@ -492,6 +551,11 @@ class VoidOS {
     }
 
     triggerShadowsGlitch() {
+        // PLAY SOUND when shadows appear
+        if (this.audioLoaded) {
+            window.voidAudio.playWhisper(0.2);
+        }
+        
         const shadow = document.createElement('div');
         shadow.style.cssText = `
             position: fixed;
@@ -514,6 +578,11 @@ class VoidOS {
     }
 
     triggerBleedingGlitch() {
+        // PLAY SOUND when text bleeds
+        if (this.audioLoaded) {
+            window.voidAudio.playCorruption(0.2);
+        }
+        
         const elements = document.querySelectorAll('.window-title, .icon-label');
         const randomEl = elements[Math.floor(Math.random() * elements.length)];
         if (randomEl) {
@@ -527,6 +596,11 @@ class VoidOS {
     }
 
     triggerWarpingGlitch() {
+        // PLAY SOUND when screen warps
+        if (this.audioLoaded) {
+            window.voidAudio.playDistortion(0.3);
+        }
+        
         document.body.style.transform = `perspective(1000px) rotateX(${Math.random() * 10 - 5}deg) rotateY(${Math.random() * 10 - 5}deg)`;
         setTimeout(() => {
             document.body.style.transform = '';
@@ -639,7 +713,7 @@ class VoidOS {
 
     fourthWallBreak() {
         if (this.audioLoaded) {
-            window.voidAudio.playWhisper();
+            window.voidAudio.playWhisper(0.2);
         }
         
         const message = this.fourthWallMessages[Math.floor(Math.random() * this.fourthWallMessages.length)];

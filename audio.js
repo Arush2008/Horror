@@ -4,6 +4,8 @@ class VoidAudio {
         this.sounds = {};
         this.volume = 0.3;
         this.initialized = false;
+        this.backgroundMusic = null;
+        this.currentBackgroundSound = null;
     }
 
     async init() {
@@ -160,6 +162,34 @@ class VoidAudio {
         return buffer;
     }
 
+    async createScaryBackgroundMusic() {
+        if (!this.audioContext) return null;
+        
+        const duration = 10; // 10 seconds loop
+        const sampleRate = this.audioContext.sampleRate;
+        const bufferSize = sampleRate * duration;
+        const buffer = this.audioContext.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // Generate scary ambient background music
+        for (let i = 0; i < bufferSize; i++) {
+            const t = i / sampleRate;
+            // Deep, ominous drone
+            data[i] = Math.sin(30 * 2 * Math.PI * t) * 0.3;
+            data[i] += Math.sin(45 * 2 * Math.PI * t) * 0.2;
+            // Add higher frequency tension
+            data[i] += Math.sin(200 * 2 * Math.PI * t) * 0.1 * Math.sin(0.5 * 2 * Math.PI * t);
+            // Random scary spikes
+            if (Math.random() < 0.001) {
+                data[i] += (Math.random() - 0.5) * 0.5;
+            }
+            // Add wind-like noise
+            data[i] += (Math.random() - 0.5) * 0.05;
+        }
+        
+        return buffer;
+    }
+
     async loadSounds() {
         if (!this.initialized) await this.init();
         
@@ -170,6 +200,7 @@ class VoidAudio {
             this.sounds.system = await this.createSystemSound();
             this.sounds.corruption = await this.createCorruptionSound();
             this.sounds.distortion = await this.createDistortionSound();
+            this.sounds.scaryBackground = await this.createScaryBackgroundMusic();
             console.log('All VoidAudio sounds loaded');
         } catch (error) {
             console.error('Failed to load sounds:', error);
@@ -213,7 +244,7 @@ class VoidAudio {
         }
     }
 
-    playGlitch(volume = 0.3) {
+    playGlitch(volume = 0.4) {
         return this.playSound('glitch', volume);
     }
 
@@ -221,7 +252,7 @@ class VoidAudio {
         return this.playSound('whisper', volume);
     }
 
-    playScare(volume = 0.8) {
+    playScare(volume = 1.0) {
         return this.playSound('scare', volume);
     }
 
@@ -229,18 +260,33 @@ class VoidAudio {
         return this.playSound('system', volume);
     }
 
-    playCorruption(volume = 0.4) {
+    playCorruption(volume = 0.5) {
         return this.playSound('corruption', volume);
     }
 
-    playDistortion(volume = 0.3) {
+    playDistortion(volume = 0.4) {
         return this.playSound('distortion', volume);
+    }
+
+    playScaryBackgroundMusic(volume = 0.3) {
+        if (this.currentBackgroundSound) {
+            this.stopSound(this.currentBackgroundSound);
+        }
+        this.currentBackgroundSound = this.playSound('scaryBackground', volume, true);
+        return this.currentBackgroundSound;
+    }
+
+    stopBackgroundMusic() {
+        if (this.currentBackgroundSound) {
+            this.stopSound(this.currentBackgroundSound);
+            this.currentBackgroundSound = null;
+        }
     }
 
     playRandomGlitch() {
         const sounds = ['glitch', 'whisper', 'corruption', 'distortion'];
         const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-        const volume = 0.2 + Math.random() * 0.3;
+        const volume = 0.3 + Math.random() * 0.4;
         return this.playSound(randomSound, volume);
     }
 
