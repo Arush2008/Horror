@@ -818,7 +818,7 @@ body {
     font-size: 48px;
     margin-bottom: 20px;
     text-shadow: 0 0 20px #ff0000;
-    animation: textGlitch 2s infinite;
+    /* Remove glitch animation for clean final screen */
 }
 
 .crash-content p {
@@ -843,8 +843,13 @@ body {
 
 #restart-btn:hover {
     background: #cc0000;
-    transform: scale(1.1);
-    box-shadow: 0 0 30px #ff0000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #ff0000;
+}
+
+#restart-btn:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
 }
 
 /* Black screen for dramatic effect */

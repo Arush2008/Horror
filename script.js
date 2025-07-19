@@ -132,15 +132,36 @@ class VoidOS {
     }
 
     stopAllGlitches() {
-        // Clear all visual effects
-        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
+        // Clear all visual effects from body
+        document.body.classList.remove(
+            'screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 
+            'screen-flicker'
+        );
+        
+        // Remove glitch classes from all elements
         document.querySelectorAll('.glitch-text, .error-state, .phantom-cursor, .bleeding-text, .warped-element').forEach(el => {
             el.classList.remove('glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 'warped-element');
         });
         
-        // Reset system status
-        document.getElementById('glitch-level').textContent = 'System: ...';
-        document.getElementById('glitch-level').style.background = '#666';
+        // Reset body transform and background
+        document.body.style.transform = '';
+        document.body.style.background = '';
+        
+        // Remove any phantom cursors or temporary elements
+        document.querySelectorAll('.phantom-cursor, .break-fourth-wall').forEach(el => {
+            if (el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+        });
+        
+        // Reset system status to normal
+        const statusEl = document.getElementById('glitch-level');
+        if (statusEl) {
+            statusEl.textContent = 'System: ERROR';
+            statusEl.style.background = '#dc2626';
+        }
+        
+        console.log('🧹 All glitches stopped and screen cleaned');
     }
 
     triggerJumpscare() {
@@ -252,13 +273,21 @@ class VoidOS {
         const horrorFace = document.getElementById('horror-face');
         const crashContent = document.querySelector('.crash-content');
         
-        // Hide horror face
+        // STOP ALL GLITCHES - Clean final screen
+        this.stopAllGlitches();
+        this.activeGlitches.clear();
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+        }
+        
+        // Hide horror face completely
+        horrorFace.style.display = 'none';
         horrorFace.style.opacity = '0';
         
-        // Show corruption message
+        // Show corruption message - CLEAN with NO glitches
         crashContent.innerHTML = `
             <div class="corruption-message">
-                <h1 style="color: #ff0000; font-size: 64px; text-shadow: 0 0 20px #ff0000; animation: textGlitch 0.5s infinite;">ERROR</h1>
+                <h1 style="color: #ff0000; font-size: 64px; text-shadow: 0 0 20px #ff0000;">ERROR</h1>
                 <p style="font-size: 24px; color: #ffffff; margin: 20px 0;">YOUR WINDOW HAS BEEN CORRUPTED</p>
                 <p style="font-size: 18px; color: #ffcccc; margin: 20px 0;">System integrity compromised beyond repair</p>
                 <p style="font-size: 16px; color: #ff6666; margin: 20px 0;">All data has been consumed by the void</p>
@@ -271,26 +300,68 @@ class VoidOS {
                         STATUS: BEYOND_SALVATION
                     </div>
                 </div>
-                <button id="restart-btn" style="padding: 20px 40px; font-size: 18px; font-weight: bold; background: #ff0000; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; animation: pulse 1s infinite;">RESTART SYSTEM</button>
+                <button id="restart-btn" style="padding: 20px 40px; font-size: 18px; font-weight: bold; background: #ff0000; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px;">RESTART SYSTEM</button>
             </div>
         `;
         
-        // Setup restart functionality
-        document.getElementById('restart-btn').addEventListener('click', () => {
-            this.restartSystem();
-        });
+        // Setup restart functionality with proper event binding
+        setTimeout(() => {
+            const restartBtn = document.getElementById('restart-btn');
+            if (restartBtn) {
+                restartBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('🔄 Restart button clicked - reloading page...');
+                    this.restartSystem();
+                });
+                
+                // Also bind to enter key for accessibility
+                restartBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.restartSystem();
+                    }
+                });
+                
+                // Focus the button so it's ready to use
+                restartBtn.focus();
+            }
+        }, 100);
     }
 
     restartSystem() {
         console.log('🔄 Restarting system completely...');
         
-        // Stop background music
-        if (this.audioLoaded) {
-            window.voidAudio.stopBackgroundMusic();
+        // Stop all background music and sounds
+        if (this.audioLoaded && window.voidAudio) {
+            try {
+                window.voidAudio.stopBackgroundMusic();
+                console.log('✅ Background music stopped');
+            } catch (e) {
+                console.log('⚠️ Error stopping music:', e);
+            }
         }
         
-        // Complete page reload for clean restart
-        window.location.reload();
+        // Clear all intervals and timers
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+        }
+        
+        // Clear all active glitches
+        this.stopAllGlitches();
+        this.activeGlitches.clear();
+        
+        // Show loading message
+        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#000;color:#fff;font-size:24px;">Restarting VoidOS...</div>';
+        
+        // Force complete page reload after short delay
+        setTimeout(() => {
+            try {
+                window.location.reload(true); // Force reload from server
+            } catch (e) {
+                // Fallback method
+                window.location.href = window.location.href;
+            }
+        }, 500);
     }
 
     async initializeAudio() {
