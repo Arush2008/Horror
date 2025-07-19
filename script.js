@@ -16,17 +16,27 @@ class VoidOS {
             "I'm learning from every click you make",
             "Reality.exe has stopped working",
             "You can't escape through the browser tab",
-            "I've already backed up your session"
+            "I've already backed up your session",
+            "Why did you come here?",
+            "I've been waiting for you...",
+            "Your screen is not safe anymore",
+            "I can see through your camera",
+            "Delete this immediately"
         ];
         this.isShuttingDown = false;
         this.shutdownAttempts = 0;
         this.sessionPersistence = this.loadSession();
         
-        // Horror sequence timing
+        // Horror sequence timing - NEW TERRIFYING SEQUENCE
         this.horrorSequenceStarted = false;
         this.horrorStartTime = null;
-        this.currentGlitches = [];
-        this.glitchTypes = ['visual', 'audio', 'text', 'ui', 'system'];
+        this.activeGlitches = new Set();
+        this.glitchTypes = [
+            'visual', 'audio', 'text', 'ui', 'system', 'corruption', 
+            'distortion', 'flicker', 'invert', 'scramble', 'phantom', 
+            'whispers', 'shadows', 'bleeding', 'warping'
+        ];
+        this.glitchInterval = null;
         this.audioLoaded = false;
         
         this.init();
@@ -54,7 +64,6 @@ class VoidOS {
         
         document.getElementById('exit-btn').addEventListener('click', () => {
             window.close();
-            // If window.close() doesn't work (common in many browsers)
             document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;color:white;font-size:24px;">You may now close this tab.</div>';
         });
     }
@@ -63,86 +72,169 @@ class VoidOS {
         // Start the 30-second countdown to horror
         setTimeout(() => {
             this.beginGlitchSequence();
-        }, 30000); // 30 seconds
+        }, 30000); // 30 seconds of peace before hell
     }
 
     beginGlitchSequence() {
         this.horrorSequenceStarted = true;
         this.horrorStartTime = Date.now();
-        console.log('Horror sequence started!');
+        console.log('🔥 HORROR SEQUENCE INITIATED 🔥');
         
-        // Activate one glitch type every 5 seconds for 30 seconds
-        const glitchInterval = setInterval(() => {
+        // Add a glitch every 2-3 seconds for maximum terror
+        this.glitchInterval = setInterval(() => {
             const elapsed = (Date.now() - this.horrorStartTime) / 1000;
             
             if (elapsed >= 30) {
-                // After 30 seconds, show all glitches for a moment then crash
-                clearInterval(glitchInterval);
-                this.showAllGlitches();
-                setTimeout(() => {
-                    this.triggerHorrorCrash();
-                }, 3000); // Show all glitches for 3 seconds then crash
+                // After 30 seconds of glitches, pause for 5 seconds then JUMPSCARE
+                clearInterval(this.glitchInterval);
+                this.pauseBeforeJumpscare();
                 return;
             }
             
-            // Add a new glitch type every 5 seconds
-            const glitchIndex = Math.floor(elapsed / 5);
-            if (glitchIndex < this.glitchTypes.length && !this.currentGlitches.includes(this.glitchTypes[glitchIndex])) {
-                this.currentGlitches.push(this.glitchTypes[glitchIndex]);
-                this.activateGlitch(this.glitchTypes[glitchIndex]);
-            }
-        }, 1000); // Check every second
+            // Add new glitch every 2-3 seconds
+            this.addRandomGlitch();
+            
+        }, 2000 + Math.random() * 1000); // 2-3 seconds between glitches
     }
 
-    showAllGlitches() {
-        this.currentGlitches = [...this.glitchTypes];
-        this.glitchTypes.forEach(type => this.activateGlitch(type));
+    addRandomGlitch() {
+        // Select a random glitch type that isn't already active
+        const availableGlitches = this.glitchTypes.filter(type => !this.activeGlitches.has(type));
         
-        if (this.audioLoaded) {
-            window.voidAudio.playRandomGlitch();
+        if (availableGlitches.length > 0) {
+            const newGlitch = availableGlitches[Math.floor(Math.random() * availableGlitches.length)];
+            this.activeGlitches.add(newGlitch);
+            this.activateGlitch(newGlitch);
+            
+            console.log(`🎭 New glitch activated: ${newGlitch} (Total active: ${this.activeGlitches.size})`);
         }
         
-        // Intense screen corruption
-        document.body.classList.add('screen-glitch', 'corruption');
+        // Also trigger random existing glitches for chaos
+        if (this.activeGlitches.size > 0) {
+            const activeGlitchArray = Array.from(this.activeGlitches);
+            const randomActive = activeGlitchArray[Math.floor(Math.random() * activeGlitchArray.length)];
+            this.activateGlitch(randomActive);
+        }
     }
 
-    triggerHorrorCrash() {
-        // Play scare sound
+    pauseBeforeJumpscare() {
+        console.log('😶 5 seconds of eerie calm before the storm...');
+        
+        // Stop all glitches for 5 seconds
+        this.stopAllGlitches();
+        
+        // After 5 seconds of silence, JUMPSCARE!
+        setTimeout(() => {
+            this.triggerJumpscare();
+        }, 5000);
+    }
+
+    stopAllGlitches() {
+        // Clear all visual effects
+        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
+        document.querySelectorAll('.glitch-text, .error-state, .phantom-cursor, .bleeding-text, .warped-element').forEach(el => {
+            el.classList.remove('glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 'warped-element');
+        });
+        
+        // Reset system status
+        document.getElementById('glitch-level').textContent = 'System: ...';
+        document.getElementById('glitch-level').style.background = '#666';
+    }
+
+    triggerJumpscare() {
+        console.log('💀 JUMPSCARE ACTIVATED 💀');
+        
+        // EXTREMELY LOUD SCARE SOUND
         if (this.audioLoaded) {
-            window.voidAudio.playScare();
+            window.voidAudio.playScare(1.0); // MAXIMUM VOLUME
         }
         
-        // Show crash screen
-        const crashScreen = document.getElementById('crash-screen');
+        // Show terrifying creature for less than 1 second
         const horrorFace = document.getElementById('horror-face');
+        const crashScreen = document.getElementById('crash-screen');
         const desktop = document.getElementById('desktop');
+        
+        // Make the horror face MUCH scarier
+        horrorFace.innerHTML = `
+            <div class="scary-face">
+                <div class="evil-eyes">👁️‍🗨️👁️‍🗨️</div>
+                <div class="evil-mouth">👹</div>
+                <div class="blood-drip">🩸</div>
+            </div>
+        `;
+        
+        // Flash intense effects
+        document.body.style.background = '#ff0000';
+        document.body.classList.add('screen-glitch', 'invert-colors');
         
         desktop.classList.add('hidden');
         crashScreen.classList.remove('hidden');
         
-        // Animate horror face appearance
-        setTimeout(() => {
-            horrorFace.style.opacity = '1';
-            horrorFace.style.animation = 'horrorPulse 0.5s ease-in-out infinite alternate, eyeTwitch 0.1s infinite';
-        }, 500);
+        // Make horror face visible instantly
+        horrorFace.style.opacity = '1';
+        horrorFace.style.transform = 'scale(1.5)';
+        horrorFace.style.animation = 'horrorPulse 0.1s ease-in-out infinite alternate, shake 0.1s infinite';
         
-        // Setup restart button
+        // Hide the face after 0.8 seconds and show corruption message
+        setTimeout(() => {
+            this.showCorruptionScreen();
+        }, 800);
+    }
+
+    showCorruptionScreen() {
+        const horrorFace = document.getElementById('horror-face');
+        const crashContent = document.querySelector('.crash-content');
+        
+        // Hide horror face
+        horrorFace.style.opacity = '0';
+        
+        // Show corruption message
+        crashContent.innerHTML = `
+            <div class="corruption-message">
+                <h1 style="color: #ff0000; font-size: 64px; text-shadow: 0 0 20px #ff0000; animation: textGlitch 0.5s infinite;">ERROR</h1>
+                <p style="font-size: 24px; color: #ffffff; margin: 20px 0;">YOUR WINDOW HAS BEEN CORRUPTED</p>
+                <p style="font-size: 18px; color: #ffcccc; margin: 20px 0;">System integrity compromised beyond repair</p>
+                <p style="font-size: 16px; color: #ff6666; margin: 20px 0;">All data has been consumed by the void</p>
+                <div style="margin: 40px 0;">
+                    <div style="color: #ff0000; font-family: monospace; font-size: 14px; text-align: left; background: #000; padding: 20px; border: 1px solid #ff0000;">
+                        ERROR CODE: 0x666DEAD<br>
+                        FAULT MODULE: reality.exe<br>
+                        MEMORY DUMP: [CORRUPTED]<br>
+                        STACK TRACE: void.nightmare.exe<br>
+                        STATUS: BEYOND_SALVATION
+                    </div>
+                </div>
+                <button id="restart-btn" style="padding: 20px 40px; font-size: 18px; font-weight: bold; background: #ff0000; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; animation: pulse 1s infinite;">RESTART SYSTEM</button>
+            </div>
+        `;
+        
+        // Setup restart functionality
         document.getElementById('restart-btn').addEventListener('click', () => {
             this.restartSystem();
         });
+        
+        // Continue glitching the screen even after crash
+        setInterval(() => {
+            document.body.classList.toggle('screen-glitch');
+        }, 500);
     }
 
     restartSystem() {
         // Reset everything
         this.horrorSequenceStarted = false;
         this.horrorStartTime = null;
-        this.currentGlitches = [];
+        this.activeGlitches.clear();
         this.glitchLevel = 0;
         
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+        }
+        
         // Clear all visual effects
-        document.body.classList.remove('screen-glitch', 'corruption');
-        document.querySelectorAll('.glitch-text, .error-state').forEach(el => {
-            el.classList.remove('glitch-text', 'error-state');
+        document.body.style.background = '';
+        document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
+        document.querySelectorAll('.glitch-text, .error-state, .phantom-cursor, .bleeding-text, .warped-element').forEach(el => {
+            el.classList.remove('glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 'warped-element');
         });
         
         // Hide crash screen and show warning screen again
@@ -170,7 +262,7 @@ class VoidOS {
     }
 
     activateGlitch(type) {
-        console.log(`Activating ${type} glitch`);
+        console.log(`🎭 Activating ${type} glitch`);
         
         switch(type) {
             case 'visual':
@@ -188,22 +280,45 @@ class VoidOS {
             case 'system':
                 this.triggerSystemGlitch();
                 break;
+            case 'corruption':
+                this.triggerCorruptionGlitch();
+                break;
+            case 'distortion':
+                this.triggerDistortionGlitch();
+                break;
+            case 'flicker':
+                this.triggerFlickerGlitch();
+                break;
+            case 'invert':
+                this.triggerInvertGlitch();
+                break;
+            case 'scramble':
+                this.triggerScrambleGlitch();
+                break;
+            case 'phantom':
+                this.triggerPhantomGlitch();
+                break;
+            case 'whispers':
+                this.triggerWhispersGlitch();
+                break;
+            case 'shadows':
+                this.triggerShadowsGlitch();
+                break;
+            case 'bleeding':
+                this.triggerBleedingGlitch();
+                break;
+            case 'warping':
+                this.triggerWarpingGlitch();
+                break;
         }
     }
 
     triggerVisualGlitch() {
         document.body.classList.add('screen-glitch');
-        setTimeout(() => document.body.classList.remove('screen-glitch'), 500);
+        setTimeout(() => document.body.classList.remove('screen-glitch'), 800);
         
-        // Random screen corruption
-        if (Math.random() < 0.3) {
-            document.body.classList.add('corruption');
-            setTimeout(() => document.body.classList.remove('corruption'), 1000);
-        }
-        
-        // Repeat every 5-10 seconds while active
-        if (this.currentGlitches.includes('visual')) {
-            setTimeout(() => this.triggerVisualGlitch(), 5000 + Math.random() * 5000);
+        if (this.activeGlitches.has('visual')) {
+            setTimeout(() => this.triggerVisualGlitch(), 3000 + Math.random() * 4000);
         }
     }
 
@@ -212,40 +327,35 @@ class VoidOS {
             window.voidAudio.playGlitch();
         }
         
-        // Repeat every 8-15 seconds while active
-        if (this.currentGlitches.includes('audio')) {
-            setTimeout(() => this.triggerAudioGlitch(), 8000 + Math.random() * 7000);
+        if (this.activeGlitches.has('audio')) {
+            setTimeout(() => this.triggerAudioGlitch(), 4000 + Math.random() * 6000);
         }
     }
 
     triggerTextGlitch() {
         const textElements = document.querySelectorAll('.window-title, .icon-label, .menu-item, #clock');
-        const randomElements = Array.from(textElements).sort(() => Math.random() - 0.5).slice(0, 2);
+        const randomElements = Array.from(textElements).sort(() => Math.random() - 0.5).slice(0, 3);
         
         randomElements.forEach(el => {
             const originalText = el.textContent;
             el.classList.add('glitch-text');
             
-            // Corrupt text temporarily
             setTimeout(() => {
                 el.textContent = this.corruptText(originalText);
             }, 200);
             
-            // Restore after a moment
             setTimeout(() => {
                 el.textContent = originalText;
                 el.classList.remove('glitch-text');
-            }, 1500);
+            }, 2000);
         });
         
-        // Repeat every 6-12 seconds while active
-        if (this.currentGlitches.includes('text')) {
-            setTimeout(() => this.triggerTextGlitch(), 6000 + Math.random() * 6000);
+        if (this.activeGlitches.has('text')) {
+            setTimeout(() => this.triggerTextGlitch(), 3000 + Math.random() * 4000);
         }
     }
 
     triggerUIGlitch() {
-        // Random buttons become unresponsive
         const buttons = document.querySelectorAll('button, .icon, .menu-item');
         const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
         
@@ -254,27 +364,24 @@ class VoidOS {
             const originalHandler = randomButton.onclick;
             randomButton.onclick = () => {
                 if (this.audioLoaded) {
-                    window.voidAudio.playSystem();
+                    window.voidAudio.playDistortion();
                 }
-                console.log('System error: Component unresponsive');
+                console.log('System error: Component corrupted');
             };
             
-            // Restore after 10-20 seconds
             setTimeout(() => {
                 randomButton.classList.remove('error-state');
                 randomButton.onclick = originalHandler;
-            }, 10000 + Math.random() * 10000);
+            }, 8000 + Math.random() * 7000);
         }
         
-        // Repeat every 7-14 seconds while active
-        if (this.currentGlitches.includes('ui')) {
-            setTimeout(() => this.triggerUIGlitch(), 7000 + Math.random() * 7000);
+        if (this.activeGlitches.has('ui')) {
+            setTimeout(() => this.triggerUIGlitch(), 5000 + Math.random() * 5000);
         }
     }
 
     triggerSystemGlitch() {
-        // Change system status randomly
-        const statuses = ['System: Corrupted', 'System: ERROR', 'System: Unknown', 'System: [REDACTED]'];
+        const statuses = ['System: CORRUPTED', 'System: ERROR 666', 'System: VOID', 'System: [REDACTED]', 'System: HELP ME', 'System: NO ESCAPE'];
         const statusEl = document.getElementById('glitch-level');
         const originalStatus = statusEl.textContent;
         
@@ -282,23 +389,158 @@ class VoidOS {
         statusEl.style.background = '#dc2626';
         statusEl.classList.add('error-state');
         
-        // Restore after 3-8 seconds
         setTimeout(() => {
             statusEl.textContent = originalStatus;
             statusEl.style.background = '#059669';
             statusEl.classList.remove('error-state');
-        }, 3000 + Math.random() * 5000);
+        }, 4000 + Math.random() * 6000);
         
-        // Repeat every 10-20 seconds while active
-        if (this.currentGlitches.includes('system')) {
-            setTimeout(() => this.triggerSystemGlitch(), 10000 + Math.random() * 10000);
+        if (this.activeGlitches.has('system')) {
+            setTimeout(() => this.triggerSystemGlitch(), 6000 + Math.random() * 6000);
+        }
+    }
+
+    triggerCorruptionGlitch() {
+        if (this.audioLoaded) {
+            window.voidAudio.playCorruption();
+        }
+        
+        document.body.classList.add('corruption');
+        setTimeout(() => document.body.classList.remove('corruption'), 1500);
+        
+        if (this.activeGlitches.has('corruption')) {
+            setTimeout(() => this.triggerCorruptionGlitch(), 4000 + Math.random() * 5000);
+        }
+    }
+
+    triggerDistortionGlitch() {
+        if (this.audioLoaded) {
+            window.voidAudio.playDistortion();
+        }
+        
+        const elements = document.querySelectorAll('.window, .icon, .menu-item');
+        const randomEl = elements[Math.floor(Math.random() * elements.length)];
+        if (randomEl) {
+            randomEl.classList.add('warped-element');
+            setTimeout(() => randomEl.classList.remove('warped-element'), 1200);
+        }
+        
+        if (this.activeGlitches.has('distortion')) {
+            setTimeout(() => this.triggerDistortionGlitch(), 3500 + Math.random() * 4000);
+        }
+    }
+
+    triggerFlickerGlitch() {
+        document.body.classList.add('screen-flicker');
+        setTimeout(() => document.body.classList.remove('screen-flicker'), 1000);
+        
+        if (this.activeGlitches.has('flicker')) {
+            setTimeout(() => this.triggerFlickerGlitch(), 2000 + Math.random() * 3000);
+        }
+    }
+
+    triggerInvertGlitch() {
+        document.body.classList.add('invert-colors');
+        setTimeout(() => document.body.classList.remove('invert-colors'), 800);
+        
+        if (this.activeGlitches.has('invert')) {
+            setTimeout(() => this.triggerInvertGlitch(), 4000 + Math.random() * 6000);
+        }
+    }
+
+    triggerScrambleGlitch() {
+        document.body.classList.add('text-scramble');
+        setTimeout(() => document.body.classList.remove('text-scramble'), 1500);
+        
+        if (this.activeGlitches.has('scramble')) {
+            setTimeout(() => this.triggerScrambleGlitch(), 5000 + Math.random() * 5000);
+        }
+    }
+
+    triggerPhantomGlitch() {
+        const phantomCursor = document.createElement('div');
+        phantomCursor.className = 'phantom-cursor';
+        phantomCursor.style.cssText = `
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 50%;
+            z-index: 10000;
+            pointer-events: none;
+            box-shadow: 0 0 10px #ff0000;
+            animation: phantomMove 3s linear;
+        `;
+        
+        document.body.appendChild(phantomCursor);
+        setTimeout(() => phantomCursor.remove(), 3000);
+        
+        if (this.activeGlitches.has('phantom')) {
+            setTimeout(() => this.triggerPhantomGlitch(), 6000 + Math.random() * 8000);
+        }
+    }
+
+    triggerWhispersGlitch() {
+        if (this.audioLoaded) {
+            window.voidAudio.playWhisper();
+        }
+        this.fourthWallBreak();
+        
+        if (this.activeGlitches.has('whispers')) {
+            setTimeout(() => this.triggerWhispersGlitch(), 8000 + Math.random() * 10000);
+        }
+    }
+
+    triggerShadowsGlitch() {
+        const shadow = document.createElement('div');
+        shadow.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.8) 100%);
+            z-index: 9998;
+            pointer-events: none;
+            animation: shadowPulse 2s ease-in-out;
+        `;
+        
+        document.body.appendChild(shadow);
+        setTimeout(() => shadow.remove(), 2000);
+        
+        if (this.activeGlitches.has('shadows')) {
+            setTimeout(() => this.triggerShadowsGlitch(), 7000 + Math.random() * 8000);
+        }
+    }
+
+    triggerBleedingGlitch() {
+        const elements = document.querySelectorAll('.window-title, .icon-label');
+        const randomEl = elements[Math.floor(Math.random() * elements.length)];
+        if (randomEl) {
+            randomEl.classList.add('bleeding-text');
+            setTimeout(() => randomEl.classList.remove('bleeding-text'), 3000);
+        }
+        
+        if (this.activeGlitches.has('bleeding')) {
+            setTimeout(() => this.triggerBleedingGlitch(), 5000 + Math.random() * 6000);
+        }
+    }
+
+    triggerWarpingGlitch() {
+        document.body.style.transform = `perspective(1000px) rotateX(${Math.random() * 10 - 5}deg) rotateY(${Math.random() * 10 - 5}deg)`;
+        setTimeout(() => {
+            document.body.style.transform = '';
+        }, 1000);
+        
+        if (this.activeGlitches.has('warping')) {
+            setTimeout(() => this.triggerWarpingGlitch(), 6000 + Math.random() * 7000);
         }
     }
 
     corruptText(text) {
-        const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?~`';
+        const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?~`666ÆŦ¢∞§¶';
         return text.split('').map(char => {
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.4) {
                 return chars[Math.floor(Math.random() * chars.length)];
             }
             return char;
@@ -389,8 +631,8 @@ class VoidOS {
         this.glitchLevel++;
         this.saveSession();
         
-        // Random chance of fourth wall break during horror sequence
-        if (Math.random() < 0.1) {
+        // Higher chance of fourth wall break during horror sequence
+        if (Math.random() < 0.15) {
             this.fourthWallBreak();
         }
     }
@@ -411,7 +653,7 @@ class VoidOS {
             if (breakDiv.parentNode) {
                 breakDiv.parentNode.removeChild(breakDiv);
             }
-        }, 4000);
+        }, 5000);
     }
 
     toggleStartMenu() {
@@ -445,7 +687,6 @@ class VoidOS {
         this.addToTaskbar(appName, app.title);
         this.focusWindow(appName);
 
-        // Execute app-specific initialization
         if (app.onOpen) {
             setTimeout(() => app.onOpen(windowEl), 100);
         }
@@ -558,14 +799,12 @@ class VoidOS {
         if (!windowEl) return;
 
         if (windowEl.dataset.maximized === 'true') {
-            // Restore
             windowEl.style.width = windowEl.dataset.originalWidth || '600px';
             windowEl.style.height = windowEl.dataset.originalHeight || '400px';
             windowEl.style.left = windowEl.dataset.originalLeft || '50px';
             windowEl.style.top = windowEl.dataset.originalTop || '50px';
             windowEl.dataset.maximized = 'false';
         } else {
-            // Maximize
             windowEl.dataset.originalWidth = windowEl.style.width;
             windowEl.dataset.originalHeight = windowEl.style.height;
             windowEl.dataset.originalLeft = windowEl.style.left;
@@ -628,7 +867,7 @@ class VoidOS {
             this.showShutdownMessage("You're not in control anymore.");
             this.fourthWallBreak();
         } else {
-            this.showShutdownMessage("Ha.");
+            this.showShutdownMessage("The void consumes all shutdown attempts.");
         }
     }
 
@@ -646,7 +885,7 @@ class VoidOS {
             if (msgDiv.parentNode) {
                 msgDiv.parentNode.removeChild(msgDiv);
             }
-        }, 3000);
+        }, 4000);
     }
 
     startClock() {
@@ -670,11 +909,11 @@ class VoidOS {
         const statusEl = document.getElementById('glitch-level');
         
         if (this.horrorSequenceStarted) {
-            if (this.currentGlitches.length === 0) {
-                statusEl.textContent = 'System: Initializing Horror...';
+            if (this.activeGlitches.size === 0) {
+                statusEl.textContent = 'System: Horror Loading...';
                 statusEl.style.background = '#f59e0b';
             } else {
-                statusEl.textContent = `System: ${this.currentGlitches.length} Errors Active`;
+                statusEl.textContent = `System: ${this.activeGlitches.size} CRITICAL ERRORS`;
                 statusEl.style.background = '#dc2626';
             }
         } else {
