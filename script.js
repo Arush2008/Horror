@@ -38,6 +38,8 @@ class VoidOS {
         ];
         this.glitchInterval = null;
         this.audioLoaded = false;
+        this.allGlitchTimers = new Set(); // Track ALL timers
+        this.silenceMode = false; // NEW: Flag to stop all glitches
         
         this.init();
     }
@@ -69,10 +71,10 @@ class VoidOS {
     }
 
     startHorrorSequence() {
-        // Start the 30-second countdown to horror
+        // Start the 15-second countdown to horror
         setTimeout(() => {
             this.beginGlitchSequence();
-        }, 30000); // 30 seconds of peace before hell
+        }, 15000); // 15 seconds of peace before hell
     }
 
     beginGlitchSequence() {
@@ -80,24 +82,30 @@ class VoidOS {
         this.horrorStartTime = Date.now();
         console.log('🔥 HORROR SEQUENCE INITIATED 🔥');
         
-        // Add a glitch every 2-3 seconds for maximum terror
+        // Store all glitch timers so we can clear them later
+        this.allGlitchTimers = new Set();
+        
+        // Add a glitch every 1 second for maximum terror
         this.glitchInterval = setInterval(() => {
             const elapsed = (Date.now() - this.horrorStartTime) / 1000;
             
-            if (elapsed >= 30) {
-                // After 30 seconds of glitches, pause for 5 seconds then JUMPSCARE
+            if (elapsed >= 15) {
+                // After 15 seconds of glitches, pause for 3 seconds then JUMPSCARE
                 clearInterval(this.glitchInterval);
                 this.pauseBeforeJumpscare();
                 return;
             }
             
-            // Add new glitch every 2-3 seconds
+            // Add new glitch every 1 second
             this.addRandomGlitch();
             
-        }, 2000 + Math.random() * 1000); // 2-3 seconds between glitches
+        }, 1000); // 1 second between glitches for intense experience
     }
 
     addRandomGlitch() {
+        // Don't add glitches during silence mode
+        if (this.silenceMode) return;
+        
         // Select a random glitch type that isn't already active
         const availableGlitches = this.glitchTypes.filter(type => !this.activeGlitches.has(type));
         
@@ -120,33 +128,82 @@ class VoidOS {
     }
 
     pauseBeforeJumpscare() {
-        console.log('😶 3 seconds of complete silence before the jumpscare...');
+        console.log('🛑 FORCING COMPLETE SYSTEM SILENCE FOR 3 SECONDS...');
         
-        // COMPLETE SILENCE - Stop all glitches and sounds
+        // NUCLEAR OPTION - Stop EVERYTHING
+        this.silenceMode = true; // This stops all glitch functions
+        this.horrorSequenceStarted = false; // Disable all horror triggers
         this.stopAllGlitches();
         this.activeGlitches.clear();
         
-        // Stop any background music or sounds
-        if (this.audioLoaded && window.voidAudio) {
-            try {
-                window.voidAudio.stopBackgroundMusic();
-            } catch (e) {
-                console.log('No background music to stop');
-            }
-        }
-        
-        // Clear all intervals
+        // Clear ALL possible intervals and timers
         if (this.glitchInterval) {
             clearInterval(this.glitchInterval);
             this.glitchInterval = null;
         }
         
-        // Reset the screen to completely normal state
+        // Clear all individual glitch timers
+        if (this.allGlitchTimers) {
+            this.allGlitchTimers.forEach(timer => clearTimeout(timer));
+            this.allGlitchTimers.clear();
+        }
+        
+        // Stop ALL audio immediately
+        if (this.audioLoaded && window.voidAudio) {
+            try {
+                window.voidAudio.stopBackgroundMusic();
+                // Stop all audio contexts to ensure silence
+                if (window.voidAudio.audioContext) {
+                    window.voidAudio.audioContext.suspend();
+                }
+            } catch (e) {
+                console.log('Audio stop error (expected):', e);
+            }
+        }
+        
+        // Force reset ALL visual elements
         document.body.style.background = '';
+        document.body.style.transform = '';
+        document.body.style.filter = '';
         document.body.classList.remove('screen-glitch', 'corruption', 'invert-colors', 'text-scramble', 'screen-flicker');
         
-        // 3 seconds of COMPLETE SILENCE
+        // Remove ALL glitch classes from ALL elements
+        document.querySelectorAll('*').forEach(el => {
+            el.classList.remove(
+                'glitch-text', 'error-state', 'phantom-cursor', 'bleeding-text', 
+                'warped-element', 'screen-glitch', 'corruption', 'invert-colors', 
+                'text-scramble', 'screen-flicker'
+            );
+            // Force stop any animations
+            el.style.animation = 'none';
+        });
+        
+        // Remove any temporary elements
+        document.querySelectorAll('.phantom-cursor, .break-fourth-wall').forEach(el => {
+            if (el.parentNode) el.parentNode.removeChild(el);
+        });
+        
+        // Reset system status to completely normal
+        const statusEl = document.getElementById('glitch-level');
+        if (statusEl) {
+            statusEl.textContent = 'System: Stable';
+            statusEl.style.background = '#059669';
+            statusEl.style.animation = 'none';
+            statusEl.classList.remove('error-state');
+        }
+        
+        console.log('🤫 COMPLETE SILENCE ACHIEVED - 3 seconds of peace...');
+        
+        // 3 seconds of GUARANTEED SILENCE - nothing can interrupt this
         setTimeout(() => {
+            console.log('💀 SILENCE BROKEN - JUMPSCARE TIME!!!');
+            // Re-enable horror system for jumpscare
+            this.silenceMode = false;
+            this.horrorSequenceStarted = true;
+            // Resume audio context if suspended
+            if (this.audioLoaded && window.voidAudio && window.voidAudio.audioContext) {
+                window.voidAudio.audioContext.resume();
+            }
             this.triggerJumpscare();
         }, 3000);
     }
@@ -202,7 +259,7 @@ class VoidOS {
         if (this.audioLoaded) {
             // TODO: Replace this with your custom jumpscare audio
             // For now using the built-in scare sound
-            window.voidAudio.playScare(1.0); // MAXIMUM VOLUME
+            window.voidAudio.playScare(1.3); // ULTRA LOUD TERROR VOLUME
         }
         
         // Show terrifying creature for less than 1 second
@@ -435,6 +492,9 @@ class VoidOS {
     }
 
     activateGlitch(type) {
+        // Don't activate glitches during silence mode
+        if (this.silenceMode) return;
+        
         console.log(`🎭 Activating ${type} glitch`);
         
         switch(type) {
@@ -487,6 +547,8 @@ class VoidOS {
     }
 
     triggerVisualGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when visual glitch happens
         if (this.audioLoaded) {
             window.voidAudio.playGlitch(0.3);
@@ -495,22 +557,28 @@ class VoidOS {
         document.body.classList.add('screen-glitch');
         setTimeout(() => document.body.classList.remove('screen-glitch'), 800);
         
-        if (this.activeGlitches.has('visual')) {
-            setTimeout(() => this.triggerVisualGlitch(), 3000 + Math.random() * 4000);
+        if (this.activeGlitches.has('visual') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerVisualGlitch(), 3000 + Math.random() * 4000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerAudioGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         if (this.audioLoaded) {
             window.voidAudio.playGlitch(0.4);
         }
         
-        if (this.activeGlitches.has('audio')) {
-            setTimeout(() => this.triggerAudioGlitch(), 4000 + Math.random() * 6000);
+        if (this.activeGlitches.has('audio') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerAudioGlitch(), 4000 + Math.random() * 6000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerTextGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when text glitches
         if (this.audioLoaded) {
             window.voidAudio.playDistortion(0.2);
@@ -533,12 +601,15 @@ class VoidOS {
             }, 2000);
         });
         
-        if (this.activeGlitches.has('text')) {
-            setTimeout(() => this.triggerTextGlitch(), 3000 + Math.random() * 4000);
+        if (this.activeGlitches.has('text') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerTextGlitch(), 3000 + Math.random() * 4000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerUIGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when UI glitches
         if (this.audioLoaded) {
             window.voidAudio.playSystem(0.5);
@@ -563,12 +634,15 @@ class VoidOS {
             }, 8000 + Math.random() * 7000);
         }
         
-        if (this.activeGlitches.has('ui')) {
-            setTimeout(() => this.triggerUIGlitch(), 5000 + Math.random() * 5000);
+        if (this.activeGlitches.has('ui') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerUIGlitch(), 5000 + Math.random() * 5000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerSystemGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when system glitches
         if (this.audioLoaded) {
             window.voidAudio.playCorruption(0.3);
@@ -588,12 +662,15 @@ class VoidOS {
             statusEl.classList.remove('error-state');
         }, 4000 + Math.random() * 6000);
         
-        if (this.activeGlitches.has('system')) {
-            setTimeout(() => this.triggerSystemGlitch(), 6000 + Math.random() * 6000);
+        if (this.activeGlitches.has('system') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerSystemGlitch(), 6000 + Math.random() * 6000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerCorruptionGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         if (this.audioLoaded) {
             window.voidAudio.playCorruption(0.4);
         }
@@ -601,12 +678,15 @@ class VoidOS {
         document.body.classList.add('corruption');
         setTimeout(() => document.body.classList.remove('corruption'), 1500);
         
-        if (this.activeGlitches.has('corruption')) {
-            setTimeout(() => this.triggerCorruptionGlitch(), 4000 + Math.random() * 5000);
+        if (this.activeGlitches.has('corruption') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerCorruptionGlitch(), 4000 + Math.random() * 5000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerDistortionGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         if (this.audioLoaded) {
             window.voidAudio.playDistortion(0.3);
         }
@@ -618,12 +698,15 @@ class VoidOS {
             setTimeout(() => randomEl.classList.remove('warped-element'), 1200);
         }
         
-        if (this.activeGlitches.has('distortion')) {
-            setTimeout(() => this.triggerDistortionGlitch(), 3500 + Math.random() * 4000);
+        if (this.activeGlitches.has('distortion') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerDistortionGlitch(), 3500 + Math.random() * 4000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerFlickerGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when screen flickers
         if (this.audioLoaded) {
             window.voidAudio.playGlitch(0.2);
@@ -632,12 +715,15 @@ class VoidOS {
         document.body.classList.add('screen-flicker');
         setTimeout(() => document.body.classList.remove('screen-flicker'), 1000);
         
-        if (this.activeGlitches.has('flicker')) {
-            setTimeout(() => this.triggerFlickerGlitch(), 2000 + Math.random() * 3000);
+        if (this.activeGlitches.has('flicker') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerFlickerGlitch(), 2000 + Math.random() * 3000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerInvertGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when colors invert
         if (this.audioLoaded) {
             window.voidAudio.playDistortion(0.2);
@@ -646,12 +732,15 @@ class VoidOS {
         document.body.classList.add('invert-colors');
         setTimeout(() => document.body.classList.remove('invert-colors'), 800);
         
-        if (this.activeGlitches.has('invert')) {
-            setTimeout(() => this.triggerInvertGlitch(), 4000 + Math.random() * 6000);
+        if (this.activeGlitches.has('invert') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerInvertGlitch(), 4000 + Math.random() * 6000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerScrambleGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when text scrambles
         if (this.audioLoaded) {
             window.voidAudio.playCorruption(0.2);
@@ -660,12 +749,15 @@ class VoidOS {
         document.body.classList.add('text-scramble');
         setTimeout(() => document.body.classList.remove('text-scramble'), 1500);
         
-        if (this.activeGlitches.has('scramble')) {
-            setTimeout(() => this.triggerScrambleGlitch(), 5000 + Math.random() * 5000);
+        if (this.activeGlitches.has('scramble') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerScrambleGlitch(), 5000 + Math.random() * 5000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerPhantomGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when phantom cursor appears
         if (this.audioLoaded) {
             window.voidAudio.playWhisper(0.1);
@@ -688,23 +780,29 @@ class VoidOS {
         document.body.appendChild(phantomCursor);
         setTimeout(() => phantomCursor.remove(), 3000);
         
-        if (this.activeGlitches.has('phantom')) {
-            setTimeout(() => this.triggerPhantomGlitch(), 6000 + Math.random() * 8000);
+        if (this.activeGlitches.has('phantom') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerPhantomGlitch(), 6000 + Math.random() * 8000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerWhispersGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         if (this.audioLoaded) {
             window.voidAudio.playWhisper(0.3);
         }
         this.fourthWallBreak();
         
-        if (this.activeGlitches.has('whispers')) {
-            setTimeout(() => this.triggerWhispersGlitch(), 8000 + Math.random() * 10000);
+        if (this.activeGlitches.has('whispers') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerWhispersGlitch(), 8000 + Math.random() * 10000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerShadowsGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when shadows appear
         if (this.audioLoaded) {
             window.voidAudio.playWhisper(0.2);
@@ -726,12 +824,15 @@ class VoidOS {
         document.body.appendChild(shadow);
         setTimeout(() => shadow.remove(), 2000);
         
-        if (this.activeGlitches.has('shadows')) {
-            setTimeout(() => this.triggerShadowsGlitch(), 7000 + Math.random() * 8000);
+        if (this.activeGlitches.has('shadows') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerShadowsGlitch(), 7000 + Math.random() * 8000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerBleedingGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when text bleeds
         if (this.audioLoaded) {
             window.voidAudio.playCorruption(0.2);
@@ -744,12 +845,15 @@ class VoidOS {
             setTimeout(() => randomEl.classList.remove('bleeding-text'), 3000);
         }
         
-        if (this.activeGlitches.has('bleeding')) {
-            setTimeout(() => this.triggerBleedingGlitch(), 5000 + Math.random() * 6000);
+        if (this.activeGlitches.has('bleeding') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerBleedingGlitch(), 5000 + Math.random() * 6000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
     triggerWarpingGlitch() {
+        if (this.silenceMode) return; // Stop if in silence mode
+        
         // PLAY SOUND when screen warps
         if (this.audioLoaded) {
             window.voidAudio.playDistortion(0.3);
@@ -760,8 +864,9 @@ class VoidOS {
             document.body.style.transform = '';
         }, 1000);
         
-        if (this.activeGlitches.has('warping')) {
-            setTimeout(() => this.triggerWarpingGlitch(), 6000 + Math.random() * 7000);
+        if (this.activeGlitches.has('warping') && !this.silenceMode) {
+            const timer = setTimeout(() => this.triggerWarpingGlitch(), 6000 + Math.random() * 7000);
+            this.allGlitchTimers.add(timer);
         }
     }
 
@@ -877,6 +982,8 @@ class VoidOS {
     }
 
     fourthWallBreak() {
+        if (this.silenceMode) return; // Don't break fourth wall during silence
+        
         if (this.audioLoaded) {
             window.voidAudio.playWhisper(0.2);
         }

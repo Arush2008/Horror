@@ -426,13 +426,22 @@ Previous notes:
                             currentDir = currentDir.split('\\').slice(0, -2).join('\\') + '\\';
                             renderFiles();
                         } else if (type === 'executable' && name === 'reality.exe') {
-                            alert('ERROR: reality.exe is corrupted and cannot be executed.');
+                            // Silently trigger glitch effect instead of alert
                             document.body.classList.add('screen-glitch');
                             setTimeout(() => document.body.classList.remove('screen-glitch'), 1000);
+                            if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                window.voidAudio.playCorruption(0.3);
+                            }
                         } else if (type === 'corrupted') {
-                            alert('ERROR: File is corrupted and cannot be opened.');
+                            // Silently trigger corruption effect instead of alert
+                            if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                window.voidAudio.playCorruption(0.2);
+                            }
                         } else {
-                            alert(`Opening ${name}... (Content corrupted by void)`);
+                            // Silently trigger system sound instead of alert
+                            if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                window.voidAudio.playSystem(0.2);
+                            }
                         }
                     });
                 });
@@ -641,22 +650,33 @@ Previous notes:
                         
                         switch(button.id) {
                             case 'apply-display':
-                                alert('Display settings applied!');
+                                // Silently apply with glitch effect
+                                document.body.classList.add('screen-flicker');
+                                setTimeout(() => document.body.classList.remove('screen-flicker'), 500);
                                 break;
                             case 'test-audio':
                                 if (window.voidAudio && window.voidAudio.audioLoaded) {
                                     window.voidAudio.playSystem(0.5);
+                                    window.voidAudio.playGlitch(0.3);
                                 }
-                                alert('Audio test completed!');
                                 break;
                             case 'system-info-refresh':
-                                alert('System information refreshed! (Nothing changed)');
+                                // Silently refresh with corruption sound
+                                if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                    window.voidAudio.playCorruption(0.2);
+                                }
                                 break;
                             case 'scan-system':
-                                alert('Security scan complete: System is beyond repair.');
+                                // Silently scan with distortion effect
+                                if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                    window.voidAudio.playDistortion(0.3);
+                                }
                                 break;
                             case 'reset-system':
-                                alert('ERROR: Factory reset is not permitted in the void.');
+                                // Silently reject with error sound
+                                if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                    window.voidAudio.playCorruption(0.4);
+                                }
                                 break;
                         }
                     });
@@ -671,7 +691,12 @@ Previous notes:
                         
                         if (checkbox.id === 'reality-check') {
                             setTimeout(() => {
-                                alert('Reality check failed: Reality not found.');
+                                // Silently fail reality check with glitch effect
+                                document.body.classList.add('invert-colors');
+                                setTimeout(() => document.body.classList.remove('invert-colors'), 800);
+                                if (window.voidAudio && window.voidAudio.audioLoaded) {
+                                    window.voidAudio.playCorruption(0.3);
+                                }
                                 checkbox.checked = false;
                             }, 1000);
                         }
