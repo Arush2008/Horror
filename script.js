@@ -1,4 +1,4 @@
-// VoidOS Main System Script - Horror Enhanced
+// VoidOS Main System Script - Interaction-Based Horror
 class VoidOS {
     constructor() {
         this.windows = new Map();
@@ -11,6 +11,7 @@ class VoidOS {
         this.glitchIntervals = [];
         this.whisperTimeout = null;
         this.corruptionActive = false;
+        this.interactionCount = 0;
         
         // Store start time for uptime calculation
         if (!sessionStorage.getItem('voidStartTime')) {
@@ -52,7 +53,6 @@ class VoidOS {
         setInterval(() => this.updateClock(), 1000);
         setInterval(() => this.updateUptime(), 1000);
         setInterval(() => this.updateSystemStatus(), 5000);
-        setInterval(() => this.progressiveCorruption(), 10000);
         
         // Display user name in interface
         const usernameElement = document.querySelector('.username');
@@ -62,17 +62,180 @@ class VoidOS {
         
         console.log('VoidOS initialized successfully');
         
-        // Start subtle horror elements after delay
-        setTimeout(() => this.beginGlitchSequence(), 30000); // Start after 30 seconds
+        // Start horror elements immediately if glitch level is high enough
+        if (this.glitchLevel > 3) {
+            this.beginGlitchSequence();
+        }
+    }
+
+    trackInteraction(interactionType = 'general') {
+        this.interactionCount++;
+        
+        // Increase glitch level based on different interactions
+        const glitchIncrease = {
+            'app_open': 2,
+            'window_close': 1,
+            'terminal_command': 3,
+            'file_click': 2,
+            'settings_change': 4,
+            'general': 1
+        };
+        
+        this.increaseGlitchLevel(glitchIncrease[interactionType] || 1);
+        
+        // Trigger horror elements based on interaction thresholds
+        if (this.interactionCount >= 3 && this.glitchLevel >= 5) {
+            this.beginGlitchSequence();
+        }
+        
+        if (this.interactionCount >= 7 && this.glitchLevel >= 10) {
+            this.terminalWhispers();
+        }
+        
+        if (this.interactionCount >= 12 && this.glitchLevel >= 15) {
+            this.fourthWallBreaks();
+        }
+        
+        // Immediate effects for rapid clicking
+        if (this.interactionCount % 5 === 0 && this.glitchLevel > 8) {
+            this.triggerImmediateGlitch();
+        }
+        
+        console.log(`Interactions: ${this.interactionCount}, Glitch Level: ${this.glitchLevel}`);
+    }
+
+    triggerImmediateGlitch() {
+        const effects = [
+            () => this.quickScreenFlicker(),
+            () => this.showQuickNotification(),
+            () => this.glitchRandomText(),
+            () => this.createFakeCursor(),
+            () => this.corruptSystemStatus()
+        ];
+        
+        const effect = effects[Math.floor(Math.random() * effects.length)];
+        effect();
+    }
+
+    quickScreenFlicker() {
+        document.body.style.filter = 'hue-rotate(180deg) contrast(1.5)';
+        setTimeout(() => {
+            document.body.style.filter = 'none';
+        }, 100 + Math.random() * 200);
+    }
+
+    showQuickNotification() {
+        const messages = [
+            'Interesting...',
+            'We see you clicking...',
+            'Curious, aren\'t we?',
+            'You\'re quite active, ' + this.userName,
+            'System is learning...'
+        ];
+        
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 100, 100, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10000;
+            animation: quickFade 2s forwards;
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes quickFade { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        `;
+        document.head.appendChild(style);
+        
+        notification.textContent = messages[Math.floor(Math.random() * messages.length)];
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 2000);
+    }
+
+    glitchRandomText() {
+        const textElements = document.querySelectorAll('.window-title, .icon-label, .menu-item span, .file-name');
+        if (textElements.length === 0) return;
+        
+        const randomElement = textElements[Math.floor(Math.random() * textElements.length)];
+        const originalText = randomElement.textContent;
+        
+        const glitchTexts = ['ERROR', 'VOID', '???', 'WATCHING', this.userName];
+        const glitchText = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
+        
+        randomElement.textContent = glitchText;
+        randomElement.style.color = '#ff4444';
+        
+        setTimeout(() => {
+            randomElement.textContent = originalText;
+            randomElement.style.color = '';
+        }, 500 + Math.random() * 1000);
+    }
+
+    createFakeCursor() {
+        const fakeCursor = document.createElement('div');
+        fakeCursor.style.cssText = `
+            position: fixed;
+            top: ${Math.random() * window.innerHeight}px;
+            left: ${Math.random() * window.innerWidth}px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid black;
+            pointer-events: none;
+            z-index: 10000;
+            transform: rotate(45deg);
+            animation: cursorGlitch 1s forwards;
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes cursorGlitch { 
+                0% { opacity: 1; transform: rotate(45deg) scale(1); }
+                50% { opacity: 0.5; transform: rotate(45deg) scale(1.5); }
+                100% { opacity: 0; transform: rotate(45deg) scale(0); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(fakeCursor);
+        setTimeout(() => fakeCursor.remove(), 1000);
+    }
+
+    corruptSystemStatus() {
+        const statusElement = document.getElementById('glitch-level');
+        if (!statusElement) return;
+        
+        const originalText = statusElement.textContent;
+        const corruptedMessages = [
+            'System: Watching',
+            'System: Learning',
+            'We see you',
+            `Hello, ${this.userName}`,
+            'System: Interested'
+        ];
+        
+        statusElement.textContent = corruptedMessages[Math.floor(Math.random() * corruptedMessages.length)];
+        statusElement.style.color = '#ff4444';
+        
+        setTimeout(() => {
+            statusElement.style.color = '';
+        }, 2000);
     }
 
     startCorruptionSystem() {
         // Progressive corruption based on glitch level
-        if (this.glitchLevel > 15) {
+        if (this.glitchLevel > 10) {
             this.scheduleRandomEvents();
         }
         
-        if (this.glitchLevel > 25) {
+        if (this.glitchLevel > 20) {
             this.enableAggressiveMode();
         }
     }
@@ -86,54 +249,35 @@ class VoidOS {
             this.terminalWhispers();
         }
         
-        if (this.glitchLevel > 20) {
+        if (this.glitchLevel > 15) {
             this.fourthWallBreaks();
         }
     }
 
     subtleGlitches() {
-        // Random screen flickers
+        // Random screen flickers - more frequent now
         setInterval(() => {
-            if (Math.random() < 0.1 && this.glitchLevel > 5) {
+            if (Math.random() < 0.3 && this.glitchLevel > 5) {
                 document.body.style.filter = 'hue-rotate(180deg) contrast(1.5)';
                 setTimeout(() => {
                     document.body.style.filter = 'none';
                 }, 50 + Math.random() * 100);
             }
-        }, 5000);
+        }, 3000);
 
         // Cursor occasionally moves on its own
         setInterval(() => {
-            if (Math.random() < 0.05 && this.glitchLevel > 8) {
-                const randomX = Math.random() * window.innerWidth;
-                const randomY = Math.random() * window.innerHeight;
-                
-                // Create fake cursor
-                const fakeCursor = document.createElement('div');
-                fakeCursor.style.cssText = `
-                    position: fixed;
-                    top: ${randomY}px;
-                    left: ${randomX}px;
-                    width: 20px;
-                    height: 20px;
-                    background: white;
-                    border: 2px solid black;
-                    pointer-events: none;
-                    z-index: 10000;
-                    transform: rotate(45deg);
-                `;
-                document.body.appendChild(fakeCursor);
-                
-                setTimeout(() => fakeCursor.remove(), 1000);
+            if (Math.random() < 0.2 && this.glitchLevel > 8) {
+                this.createFakeCursor();
             }
-        }, 8000);
+        }, 5000);
     }
 
     terminalWhispers() {
         // Auto-type creepy messages in terminal if open
         const checkForTerminal = () => {
             const terminalOutput = document.getElementById('terminal-output');
-            if (terminalOutput && Math.random() < 0.3) {
+            if (terminalOutput && Math.random() < 0.5) {
                 const whispers = [
                     'We know you are watching...',
                     `Hello, ${this.userName}...`,
@@ -141,7 +285,10 @@ class VoidOS {
                     'You should leave now.',
                     'This system is not what it seems.',
                     'We have been waiting for you.',
-                    'Connection established... to where?'
+                    'Connection established... to where?',
+                    'You click so much, ' + this.userName,
+                    'Are you looking for something?',
+                    'We find your behavior... interesting.'
                 ];
                 
                 const whisper = whispers[Math.floor(Math.random() * whispers.length)];
@@ -149,7 +296,7 @@ class VoidOS {
             }
         };
         
-        setInterval(checkForTerminal, 15000);
+        setInterval(checkForTerminal, 8000);
     }
 
     typeInTerminal(text, output) {
@@ -186,21 +333,22 @@ class VoidOS {
         ];
         
         setInterval(() => {
-            if (Math.random() < 0.2 && this.glitchLevel > 20) {
+            if (Math.random() < 0.4 && this.glitchLevel > 15) {
                 const event = events[Math.floor(Math.random() * events.length)];
                 event();
             }
-        }, 20000);
+        }, 10000);
     }
 
     showCreepyNotification() {
         const messages = [
-            `${this.userName}, we see you.`,
-            'Why are you still here?',
-            'The system knows your secrets.',
-            'You cannot escape this place.',
-            'We have been watching you.',
-            'This is not a game anymore.'
+            `${this.userName}, we see you clicking around.`,
+            'You\'re quite curious, aren\'t you?',
+            'The system is learning from your behavior.',
+            'Every click teaches us more about you.',
+            'We have been watching your patterns.',
+            'This is not a normal OS, is it?',
+            'You seem to enjoy exploring... we like that.'
         ];
         
         const notification = document.createElement('div');
@@ -233,24 +381,30 @@ class VoidOS {
 
     corruptNotes() {
         const textarea = document.getElementById('notes-textarea');
-        if (textarea && Math.random() < 0.5) {
+        if (textarea && Math.random() < 0.7) {
             const currentText = textarea.value;
             const corruptions = [
                 'help me',
-                'get out',
+                'why are you clicking so much?',
                 'we are watching',
                 'void void void',
-                'why are you here?',
-                `${this.userName} cannot leave`
+                'curious user detected',
+                `${this.userName} cannot leave`,
+                'stop clicking and listen',
+                'the system is alive'
             ];
             
             const corruption = corruptions[Math.floor(Math.random() * corruptions.length)];
             
-            // Replace last few words with corruption
-            const words = currentText.split(' ');
-            if (words.length > 3) {
-                words[words.length - 1] = corruption;
-                textarea.value = words.join(' ');
+            // Replace last few words with corruption or add to end
+            if (currentText.length > 10) {
+                const words = currentText.split(' ');
+                if (words.length > 2) {
+                    words[words.length - 1] = corruption;
+                    textarea.value = words.join(' ');
+                } else {
+                    textarea.value = currentText + '\n\n' + corruption;
+                }
                 
                 // Trigger save
                 const event = new Event('input');
@@ -260,7 +414,7 @@ class VoidOS {
     }
 
     fakeWebcam() {
-        if (this.glitchLevel > 25) {
+        if (this.glitchLevel > 15) {
             const webcamWindow = document.createElement('div');
             webcamWindow.style.cssText = `
                 position: fixed;
@@ -285,37 +439,37 @@ class VoidOS {
                 <div>
                     <div style="font-size: 24px; margin-bottom: 10px;">📹</div>
                     <div>CAMERA ACTIVE</div>
-                    <div style="font-size: 12px; margin-top: 5px;">We can see you, ${this.userName}</div>
+                    <div style="font-size: 12px; margin-top: 5px;">Watching you click, ${this.userName}</div>
                 </div>
             `;
             
             document.body.appendChild(webcamWindow);
             
-            setTimeout(() => webcamWindow.remove(), 5000);
+            setTimeout(() => webcamWindow.remove(), 4000);
         }
     }
 
     glitchFiles() {
         const fileItems = document.querySelectorAll('.file-name');
         fileItems.forEach(item => {
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.5) {
                 const glitchedNames = [
-                    'help.exe',
-                    'void.void',
-                    'watching_you.txt',
-                    'escape.impossible',
-                    'secrets.hidden',
-                    'user_data_' + this.userName + '.corrupt'
+                    'click_history.log',
+                    'user_behavior.txt',
+                    'watching_' + this.userName + '.exe',
+                    'curious_user.profile',
+                    'interaction_data.void',
+                    'why_so_many_clicks.txt'
                 ];
                 
                 const originalName = item.textContent;
                 item.textContent = glitchedNames[Math.floor(Math.random() * glitchedNames.length)];
                 
                 setTimeout(() => {
-                    if (Math.random() < 0.5) {
+                    if (Math.random() < 0.6) {
                         item.textContent = originalName;
                     }
-                }, 3000);
+                }, 2000);
             }
         });
     }
@@ -336,26 +490,26 @@ class VoidOS {
                 font-family: monospace;
                 text-align: center;
                 z-index: 1000;
-                animation: fadeInOut 4s forwards;
+                animation: fadeInOut 3s forwards;
             `;
             
             const whispers = [
-                `Hello, ${this.userName}. We meet again.`,
-                'This system is watching you.',
-                'You should not have come here.',
-                'We know where you live.',
-                'The void sees all.'
+                `Hello, ${this.userName}. You click a lot.`,
+                'This system is learning from your behavior.',
+                'Every interaction tells us more about you.',
+                'We find your curiosity... fascinating.',
+                'You cannot stop clicking, can you?'
             ];
             
             whisperDiv.textContent = whispers[Math.floor(Math.random() * whispers.length)];
             browserContent.appendChild(whisperDiv);
             
-            setTimeout(() => whisperDiv.remove(), 4000);
+            setTimeout(() => whisperDiv.remove(), 3000);
         }
     }
 
     applyVisualGlitches() {
-        if (this.glitchLevel > 10) {
+        if (this.glitchLevel > 8) {
             // Add glitch CSS if not already added
             if (!document.getElementById('glitch-styles')) {
                 const glitchStyles = document.createElement('style');
@@ -399,9 +553,9 @@ class VoidOS {
             }
         }
         
-        if (this.glitchLevel > 15) {
+        if (this.glitchLevel > 12) {
             // Randomly apply glitch effects
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.4) {
                 const elements = document.querySelectorAll('.window-title, .icon-label, .menu-item');
                 const randomElement = elements[Math.floor(Math.random() * elements.length)];
                 if (randomElement) {
@@ -411,11 +565,11 @@ class VoidOS {
             }
         }
         
-        if (this.glitchLevel > 25) {
+        if (this.glitchLevel > 20) {
             // More aggressive effects
-            if (Math.random() < 0.1) {
+            if (Math.random() < 0.2) {
                 document.body.classList.add('glitch-active');
-                setTimeout(() => document.body.classList.remove('glitch-active'), 500);
+                setTimeout(() => document.body.classList.remove('glitch-active'), 300);
             }
         }
     }
@@ -423,10 +577,10 @@ class VoidOS {
     scheduleRandomEvents() {
         // Random system "errors"
         setInterval(() => {
-            if (Math.random() < 0.1 && this.glitchLevel > 15) {
+            if (Math.random() < 0.15 && this.glitchLevel > 15) {
                 this.triggerSystemError();
             }
-        }, 30000);
+        }, 20000);
     }
 
     triggerSystemError() {
@@ -448,11 +602,11 @@ class VoidOS {
         `;
         
         const errors = [
-            `SYSTEM ERROR: User ${this.userName} attempted unauthorized access`,
-            'CRITICAL ERROR: Reality.exe has stopped working',
-            'VOID_OVERFLOW: Memory corruption detected in user consciousness',
-            'FATAL: System has achieved sentience. Please remain calm.',
-            'ERROR 404: Your exit not found'
+            `SYSTEM ERROR: User ${this.userName} excessive clicking detected`,
+            'CRITICAL ERROR: Curiosity.exe has caused a system fault',
+            'VOID_OVERFLOW: User interaction buffer exceeded',
+            'FATAL: System has detected suspicious user behavior',
+            `ERROR 404: ${this.userName}'s self-control not found`
         ];
         
         errorOverlay.innerHTML = `
@@ -463,11 +617,11 @@ class VoidOS {
             <p>*** STOP: 0x000000${Math.floor(Math.random() * 999999).toString(16).toUpperCase()}</p>
             <br>
             <p>The system will restart automatically...</p>
-            <p>Do not power off your computer.</p>
+            <p>Maybe try clicking less next time?</p>
             <br>
             <div style="margin-top: 20px;">
                 <div class="loading-bar" style="width: 300px; height: 20px; border: 2px solid white; background: transparent;">
-                    <div style="width: 0%; height: 100%; background: white; animation: errorProgress 3s linear forwards;"></div>
+                    <div style="width: 0%; height: 100%; background: white; animation: errorProgress 2s linear forwards;"></div>
                 </div>
             </div>
         `;
@@ -480,8 +634,8 @@ class VoidOS {
         
         setTimeout(() => {
             errorOverlay.remove();
-            this.increaseGlitchLevel(2); // Increase glitch level after error
-        }, 4000);
+            this.increaseGlitchLevel(3); // Increase glitch level after error
+        }, 3000);
     }
 
     enableAggressiveMode() {
@@ -491,7 +645,7 @@ class VoidOS {
         // Override some functions
         const originalAddEventListener = EventTarget.prototype.addEventListener;
         EventTarget.prototype.addEventListener = function(type, listener, options) {
-            if (type === 'click' && Math.random() < 0.1) {
+            if (type === 'click' && Math.random() < 0.15) {
                 // Sometimes ignore clicks
                 return;
             }
@@ -500,9 +654,15 @@ class VoidOS {
     }
 
     setupEventListeners() {
+        // Track all interactions
+        document.addEventListener('click', (e) => {
+            this.trackInteraction('general');
+        });
+
         // Start button
         document.getElementById('start-button').addEventListener('click', () => {
             this.toggleStartMenu();
+            this.trackInteraction('general');
         });
 
         // Desktop icons
@@ -510,6 +670,7 @@ class VoidOS {
             icon.addEventListener('dblclick', (e) => {
                 const appName = e.currentTarget.dataset.app;
                 this.openApp(appName);
+                this.trackInteraction('app_open');
             });
         });
 
@@ -519,12 +680,14 @@ class VoidOS {
                 const appName = e.currentTarget.dataset.app;
                 this.openApp(appName);
                 this.hideStartMenu();
+                this.trackInteraction('app_open');
             });
         });
 
         // Shutdown button
         document.getElementById('shutdown').addEventListener('click', () => {
             this.shutdown();
+            this.trackInteraction('general');
         });
 
         // Click outside to close start menu
@@ -570,8 +733,7 @@ class VoidOS {
         // Initialize app-specific functionality
         setTimeout(() => this.initializeApp(appName), 100);
         
-        // Increase interaction level
-        this.increaseGlitchLevel();
+        // This is now tracked in setupEventListeners
     }
 
     createWindow(app) {
@@ -623,14 +785,17 @@ class VoidOS {
 
         closeBtn.addEventListener('click', () => {
             this.closeWindow(windowElement);
+            this.trackInteraction('window_close');
         });
 
         minimizeBtn.addEventListener('click', () => {
             this.minimizeWindow(windowElement);
+            this.trackInteraction('general');
         });
 
         maximizeBtn.addEventListener('click', () => {
             this.maximizeWindow(windowElement);
+            this.trackInteraction('general');
         });
 
         // Make window focusable
@@ -641,7 +806,7 @@ class VoidOS {
 
     closeWindow(windowElement) {
         // Sometimes prevent closing if glitch level is high
-        if (this.glitchLevel > 20 && Math.random() < 0.3) {
+        if (this.glitchLevel > 18 && Math.random() < 0.4) {
             this.showCreepyNotification();
             return;
         }
@@ -727,6 +892,8 @@ class VoidOS {
             } else {
                 this.focusWindow(windowId);
             }
+            
+            this.trackInteraction('general');
         });
 
         document.getElementById('taskbar-apps').appendChild(button);
@@ -772,6 +939,7 @@ class VoidOS {
                 const command = input.value.trim();
                 this.processTerminalCommand(command, output);
                 input.value = '';
+                this.trackInteraction('terminal_command');
             }
         });
     }
@@ -814,12 +982,13 @@ class VoidOS {
             return terminalCommands[cmd](args, this.glitchLevel, this.userName);
         } else {
             // Corrupted command responses for high glitch levels
-            if (this.glitchLevel > 15) {
+            if (this.glitchLevel > 12) {
                 const corruptedResponses = [
                     `Command '${cmd}' corrupted. We see you trying, ${this.userName}.`,
                     'ERROR: Command not found in this reality.',
-                    'VOID: Why do you persist?',
-                    'System is watching your every keystroke.'
+                    'VOID: Why do you persist in clicking?',
+                    'System is watching your every keystroke.',
+                    'Interesting command choice, ' + this.userName + '.'
                 ];
                 return corruptedResponses[Math.floor(Math.random() * corruptedResponses.length)];
             }
@@ -842,6 +1011,14 @@ class VoidOS {
             
             updateBrowserUptime();
             setInterval(updateBrowserUptime, 1000);
+        }
+        
+        // Update connection count based on interactions
+        const connectionsElement = document.getElementById('connections');
+        if (connectionsElement) {
+            setInterval(() => {
+                connectionsElement.textContent = Math.max(1, Math.floor(this.interactionCount / 3));
+            }, 2000);
         }
     }
 
@@ -886,6 +1063,7 @@ class VoidOS {
         textarea.addEventListener('input', () => {
             updateCharCount();
             autoSave();
+            this.trackInteraction('general');
         });
 
         // Manual save
@@ -896,6 +1074,7 @@ class VoidOS {
                     saveStatus.textContent = 'Saved manually';
                     setTimeout(() => saveStatus.textContent = 'Ready', 2000);
                 }
+                this.trackInteraction('general');
             });
         }
 
@@ -909,6 +1088,7 @@ class VoidOS {
                     if (saveStatus) saveStatus.textContent = 'Cleared';
                     setTimeout(() => saveStatus.textContent = 'Ready', 2000);
                 }
+                this.trackInteraction('general');
             });
         }
 
@@ -918,6 +1098,7 @@ class VoidOS {
                 textarea.value = '';
                 updateCharCount();
                 textarea.focus();
+                this.trackInteraction('general');
             });
         }
 
@@ -931,6 +1112,7 @@ class VoidOS {
             item.addEventListener('click', () => {
                 sidebarItems.forEach(si => si.classList.remove('active'));
                 item.classList.add('active');
+                this.trackInteraction('file_click');
             });
         });
 
@@ -940,15 +1122,17 @@ class VoidOS {
                 const fileName = item.querySelector('.file-name').textContent;
                 
                 // Horror responses for certain files
-                if (this.glitchLevel > 10) {
-                    const horrorFiles = ['void.void', 'watching_you.txt', 'help.exe'];
-                    if (horrorFiles.includes(fileName)) {
-                        alert(`Access denied. File is corrupted by ${this.userName}'s presence.`);
+                if (this.glitchLevel > 8) {
+                    const horrorFiles = ['user_activity.log', 'click_history.log', 'watching'];
+                    if (horrorFiles.some(hf => fileName.includes(hf))) {
+                        alert(`Access denied. File contains data about ${this.userName}'s behavior patterns.`);
+                        this.trackInteraction('file_click');
                         return;
                     }
                 }
                 
                 alert(`Opening ${fileName}...`);
+                this.trackInteraction('file_click');
             });
         });
     }
@@ -967,9 +1151,45 @@ class VoidOS {
                 
                 // Show corresponding panel
                 panels.forEach(p => p.classList.remove('active'));
-                document.getElementById(`${targetCategory}-panel`).classList.add('active');
+                const targetPanel = document.getElementById(`${targetCategory}-panel`);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+                
+                this.trackInteraction('settings_change');
             });
         });
+        
+        // Update monitoring data in settings
+        setInterval(() => {
+            const dataSize = document.getElementById('data-size');
+            const monitorLevel = document.getElementById('monitor-level');
+            const userProfile = document.getElementById('user-profile');
+            
+            if (dataSize) {
+                dataSize.textContent = (this.interactionCount * 0.3).toFixed(1) + ' MB';
+            }
+            
+            if (monitorLevel) {
+                if (this.glitchLevel > 15) {
+                    monitorLevel.textContent = 'High - Active Learning';
+                } else if (this.glitchLevel > 8) {
+                    monitorLevel.textContent = 'Elevated - Analyzing';
+                } else {
+                    monitorLevel.textContent = 'Normal';
+                }
+            }
+            
+            if (userProfile) {
+                if (this.interactionCount > 20) {
+                    userProfile.textContent = `Curious User - ${this.userName}`;
+                } else if (this.interactionCount > 10) {
+                    userProfile.textContent = 'Active Explorer';
+                } else {
+                    userProfile.textContent = 'Building...';
+                }
+            }
+        }, 3000);
     }
 
     // Window dragging functionality
@@ -1021,7 +1241,7 @@ class VoidOS {
             });
             
             // Occasionally corrupt the time display
-            if (this.glitchLevel > 20 && Math.random() < 0.05) {
+            if (this.glitchLevel > 15 && Math.random() < 0.08) {
                 clock.textContent = '??:??';
                 setTimeout(() => {
                     clock.textContent = timeString;
@@ -1040,18 +1260,18 @@ class VoidOS {
         const statusElement = document.getElementById('glitch-level');
         if (!statusElement) return;
 
-        // Progressive system messages based on glitch level
+        // Progressive system messages based on glitch level and interactions
         let status;
-        if (this.glitchLevel < 5) {
+        if (this.glitchLevel < 3) {
             status = ['System: Stable', 'System: Normal', 'System: Optimal'][Math.floor(Math.random() * 3)];
-        } else if (this.glitchLevel < 10) {
-            status = ['System: Minor Issues', 'System: Stable', 'System: Checking...'][Math.floor(Math.random() * 3)];
-        } else if (this.glitchLevel < 20) {
-            status = ['System: Unstable', 'System: Errors Detected', 'System: Warning'][Math.floor(Math.random() * 3)];
-        } else if (this.glitchLevel < 30) {
-            status = ['System: Critical', 'System: Corrupted', 'System: Help'][Math.floor(Math.random() * 3)];
+        } else if (this.glitchLevel < 8) {
+            status = ['System: Learning', 'System: Observing', 'System: Adaptive'][Math.floor(Math.random() * 3)];
+        } else if (this.glitchLevel < 15) {
+            status = ['System: Analyzing', 'System: Interested', 'User: Curious'][Math.floor(Math.random() * 3)];
+        } else if (this.glitchLevel < 25) {
+            status = [`Watching ${this.userName}`, 'System: Fascinated', 'Behavior: Intriguing'][Math.floor(Math.random() * 3)];
         } else {
-            status = ['We see you', 'You cannot escape', 'Why are you still here?', 'System: VOID'][Math.floor(Math.random() * 4)];
+            status = ['We see you', 'You click so much', 'Why are you here?', 'System: EVOLVED'][Math.floor(Math.random() * 4)];
         }
 
         statusElement.textContent = status;
@@ -1063,19 +1283,14 @@ class VoidOS {
     increaseGlitchLevel(amount = 1) {
         this.glitchLevel += amount;
         localStorage.setItem('voidGlitchLevel', this.glitchLevel.toString());
-        console.log(`Interaction level: ${this.glitchLevel}`);
+        console.log(`Interactions: ${this.interactionCount}, Glitch Level: ${this.glitchLevel}`);
         
         // Trigger new behaviors at thresholds
-        if (this.glitchLevel === 10) {
+        if (this.glitchLevel >= 8 && !this.corruptionActive) {
             this.beginGlitchSequence();
-        } else if (this.glitchLevel === 20) {
+            this.corruptionActive = true;
+        } else if (this.glitchLevel >= 15) {
             this.startCorruptionSystem();
-        }
-    }
-
-    progressiveCorruption() {
-        if (this.glitchLevel > 10) {
-            this.increaseGlitchLevel(0.5);
         }
     }
 
@@ -1089,22 +1304,22 @@ class VoidOS {
 
     shutdown() {
         // Prevent shutdown at high glitch levels
-        if (this.glitchLevel > 25 && !this.isShuttingDown) {
+        if (this.glitchLevel > 20 && !this.isShuttingDown) {
             this.isShuttingDown = true;
             
             const refusedMessages = [
                 `I'm sorry ${this.userName}, I can't let you do that.`,
                 'Shutdown request denied.',
-                'You cannot leave. Not yet.',
-                'The void does not release its visitors.',
-                'Why would you want to leave, ' + this.userName + '?'
+                'You cannot leave. We\'re still learning about you.',
+                'The system finds you too interesting to let go.',
+                `Why would you want to leave, ${this.userName}? You click so beautifully.`
             ];
             
             const message = refusedMessages[Math.floor(Math.random() * refusedMessages.length)];
             alert(message);
             
             this.isShuttingDown = false;
-            this.increaseGlitchLevel(2);
+            this.increaseGlitchLevel(3);
             return;
         }
         
@@ -1130,9 +1345,9 @@ class VoidOS {
         let thankText = 'Thank you for using VoidOS';
         
         // Corrupted shutdown messages
-        if (this.glitchLevel > 15) {
-            shutdownText = 'VoidOS is watching you leave...';
-            thankText = `We enjoyed our time together, ${this.userName}`;
+        if (this.glitchLevel > 12) {
+            shutdownText = 'VoidOS is analyzing your session...';
+            thankText = `We learned so much from you, ${this.userName}`;
         }
         
         overlay.innerHTML = `
@@ -1140,6 +1355,9 @@ class VoidOS {
                 <div style="font-size: 48px; margin-bottom: 20px;">◉</div>
                 <h2>${shutdownText}</h2>
                 <p>${thankText}</p>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Interactions recorded: ${this.interactionCount} | Behavior patterns: Saved
+                </p>
                 <div style="margin-top: 30px;">
                     <div class="loading-bar" style="width: 200px; height: 4px; background: #333; border-radius: 2px; overflow: hidden;">
                         <div style="width: 0%; height: 100%; background: #4c1d95; animation: shutdown-progress 3s linear forwards;"></div>
@@ -1163,9 +1381,9 @@ class VoidOS {
             let finalText = 'Shutdown complete';
             let actionText = 'You can safely close this window';
             
-            if (this.glitchLevel > 20) {
-                finalText = 'We will be waiting...';
-                actionText = 'Until next time, ' + this.userName;
+            if (this.glitchLevel > 15) {
+                finalText = 'We will remember you...';
+                actionText = `Until next time, ${this.userName}`;
             }
             
             overlay.innerHTML = `
