@@ -8,7 +8,29 @@
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwMDAwIi8+CjxwYXRoIGQ9Ik0xNiA4TDI0IDE2TDE2IDI0TDggMTZMMTYgOFoiIGZpbGw9IiM0QzFEOTUiLz4KPC9zdmc+Cg==">
 </head>
 <body>
-    <div id="desktop">
+    <!-- Warning Screen -->
+    <div id="warning-screen">
+        <div class="warning-content">
+            <div class="warning-icon">⚠️</div>
+            <h1>WARNING</h1>
+            <div class="warning-text">
+                <p><strong>This experience contains:</strong></p>
+                <ul>
+                    <li>Loud audio effects</li>
+                    <li>Flashing lights</li>
+                    <li>Horror content</li>
+                    <li>Sudden scares</li>
+                    <li>Psychological elements</li>
+                </ul>
+                <p>Please ensure your volume is at a comfortable level.</p>
+                <p><strong>Do not proceed if you have photosensitive epilepsy or heart conditions.</strong></p>
+            </div>
+            <button id="proceed-btn">I UNDERSTAND - PROCEED TO VOIDOS</button>
+            <button id="exit-btn">EXIT</button>
+        </div>
+    </div>
+
+    <div id="desktop" class="hidden">
         <!-- Desktop Background -->
         <div id="wallpaper"></div>
         
@@ -90,8 +112,31 @@
             </div>
         </div>
     </div>
+
+    <!-- Horror Crash Screen -->
+    <div id="crash-screen" class="hidden">
+        <div id="horror-face"></div>
+        <div class="crash-content">
+            <h1>SYSTEM CORRUPTED</h1>
+            <p>VoidOS has experienced a critical error and needs to restart.</p>
+            <p>Your session has been... interesting.</p>
+            <button id="restart-btn">RESTART SYSTEM</button>
+        </div>
+    </div>
+    
+    <!-- Audio Elements -->
+    <audio id="glitch-sound" preload="auto" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+btuGAaAy+LzfLNfyYFl4XK69CJPAkdaLnm"</source>
+    </audio>
+    <audio id="whisper-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+btuGAaAy+LzfLNfyYFl4XK69CJPAkdaLnm"</source>
+    </audio>
+    <audio id="scare-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+btuGAaAy+LzfLNfyYFl4XK69CJPAkdaLnm"</source>
+    </audio>
     
     <script src="apps.js"></script>
+    <script src="audio.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
