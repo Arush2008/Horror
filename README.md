@@ -1,101 +1,43 @@
-# VoidOS - A Web-Based Operating System Experience
+💻 VoidOS — A Glitchy Web-Based Operating System Experience
 
-VoidOS is a clean, modern fake operating system built entirely in the browser. It simulates a retro desktop environment with fully functional applications and a smooth user interface.
+VoidOS is a fully in-browser fake operating system. It starts off clean and modern — like a retro-futuristic desktop — but the more you use it, the more it breaks. Windows stutter, commands glitch, UI elements bug out. It’s like your system is slowly falling apart... on purpose.
 
-## Features
+✨ What Can It Do?
 
-### 🖥️ Desktop Environment
-- Retro-style desktop with animated gradient background
-- Draggable desktop icons
-- Start menu with application launcher
-- Taskbar with system tray and clock
-- Window management (minimize, maximize, close)
-- Draggable and resizable windows
+VoidOS feels like a real OS in your browser. It’s got:
 
-### 📱 Applications
-- **VoidTerminal**: Functional terminal with various commands
-- **VoidBrowser**: System information portal with uptime tracking
-- **Notes**: Text editor with auto-save and character counting
-- **File Explorer**: File browser with folder navigation
-- **System Settings**: Configuration panels for system preferences
+🖥️ Desktop Environment
+A retro-inspired desktop with a gradient animated background
+Draggable icons and a fully working taskbar
+Start menu to launch built-in apps
+Windows you can move, resize, minimize, or close
+System tray with real-time clock and status
+📦 Built-In Applications
+VoidTerminal – A command-line terminal that lets you interact with the system
+VoidBrowser – A fake browser that shows system info and uptime
+Notes App – A basic text editor with auto-save and character count
+File Explorer – A folder/file navigation UI with dummy files
+Settings Panel – Allows the user to "customize" (but not really fix) things
+⚙️ Core System Features
+Local storage keeps your settings and session even if you refresh
+Real-time system clock, uptime tracking, and session monitoring
+Terminal supports interactive commands
+Smooth transitions and retro-glitch effects that increase with use
+Responsive layout for both desktop and mobile
+Glitches get worse the more you interact with the system 😈
+🧪 Terminal Commands
 
-### ⚡ System Features
-- Persistent storage using localStorage
-- Session tracking and uptime monitoring
-- Interactive terminal commands
-- Real-time clock and system status
-- Smooth animations and transitions
-- Responsive design for mobile devices
+🎨 Customizing
+Want it to look different?
 
-## Usage
+Change colors, backgrounds, and themes in styles.css
+The VoidOS class (in script.js) controls window behaviors
+You can tweak glitches, transitions, and layout from there too
+💻 Works On...
 
-1. Open `index.html` in your web browser
-2. Double-click desktop icons to launch applications
-3. Use the start menu to access all programs
-4. Drag windows by their title bars
-5. Use window controls to minimize, maximize, or close
-6. Try terminal commands like `help`, `ls`, `system`, `uptime`
 
-## Terminal Commands
+📜 License
 
-- `help` - Show available commands
-- `clear` - Clear terminal screen
-- `ls` - List files and directories
-- `pwd` - Print working directory
-- `whoami` - Display current user
-- `date` - Show current date and time
-- `system` - Show system information
-- `uptime` - Show system uptime
-- `version` - Show VoidOS version
-- `echo <text>` - Print text to console
-- `scan` - Scan system status
-- `connect` - Establish connection
+MIT License. Free to use, remix, and break even more.
 
-## File Structure
-
-```
-VoidOS/
-├── index.html          # Main HTML structure
-├── styles.css          # All styling and animations
-├── apps.js            # App definitions and terminal commands
-├── script.js          # Main system functionality
-└── README.md          # This file
-```
-
-## Browser Compatibility
-
-VoidOS works best in modern browsers that support:
-- CSS Grid and Flexbox
-- ES6 JavaScript features
-- localStorage
-- CSS animations and transforms
-
-Tested on:
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## Development
-
-The system is built with vanilla HTML, CSS, and JavaScript for maximum compatibility and performance. Each app is modular and can be easily extended or modified.
-
-### Adding New Apps
-
-1. Define the app in `apps.js` with title, icon, content, and styles
-2. Add the app to the desktop icons and start menu in `index.html`
-3. Implement app-specific functionality in the `initializeApp` method in `script.js`
-
-### Customizing the Interface
-
-- Colors and themes can be modified in `styles.css`
-- Window behaviors are controlled in the VoidOS class
-- App content and functionality are defined in `apps.js`
-
-## License
-
-This project is open source and available under the MIT License.
-
----
-
-**VoidOS - The OS that pushes boundaries**
+VoidOS – The more you use it, the more it loses its mind.
