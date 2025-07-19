@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoidOS - The OS that pushes boundaries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwMDAwIi8+CjxwYXRoIGQ9Ik0xNiA4TDI0IDE2TDE2IDI0TDggMTZMMTYgOFoiIGZpbGw9IiM0QzFEOTUiLz4KPC9zdmc+Cg==">
+</head>
+<body>
+    <div id="desktop">
+        <!-- Desktop Background -->
+        <div id="wallpaper"></div>
+        
+        <!-- Desktop Icons -->
+        <div id="desktop-icons">
+            <div class="icon" data-app="terminal">
+                <div class="icon-image terminal-icon"></div>
+                <span class="icon-label">VoidTerminal</span>
+            </div>
+            <div class="icon" data-app="browser">
+                <div class="icon-image browser-icon"></div>
+                <span class="icon-label">VoidBrowser</span>
+            </div>
+            <div class="icon" data-app="notes">
+                <div class="icon-image notes-icon"></div>
+                <span class="icon-label">Notes</span>
+            </div>
+            <div class="icon" data-app="files">
+                <div class="icon-image files-icon"></div>
+                <span class="icon-label">File Explorer</span>
+            </div>
+            <div class="icon" data-app="settings">
+                <div class="icon-image settings-icon"></div>
+                <span class="icon-label">System Settings</span>
+            </div>
+        </div>
+        
+        <!-- Windows Container -->
+        <div id="windows-container"></div>
+        
+        <!-- Taskbar -->
+        <div id="taskbar">
+            <div id="start-button">
+                <span>◉ VoidOS</span>
+            </div>
+            <div id="taskbar-apps"></div>
+            <div id="system-tray">
+                <div id="clock"></div>
+                <div id="system-status">
+                    <span id="glitch-level">System: Stable</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Start Menu -->
+        <div id="start-menu" class="hidden">
+            <div class="start-menu-header">
+                <div class="user-info">
+                    <div class="user-avatar"></div>
+                    <span class="username">User</span>
+                </div>
+            </div>
+            <div class="start-menu-items">
+                <div class="menu-item" data-app="terminal">
+                    <div class="menu-icon terminal-icon"></div>
+                    <span>VoidTerminal</span>
+                </div>
+                <div class="menu-item" data-app="browser">
+                    <div class="menu-icon browser-icon"></div>
+                    <span>VoidBrowser</span>
+                </div>
+                <div class="menu-item" data-app="notes">
+                    <div class="menu-icon notes-icon"></div>
+                    <span>Notes</span>
+                </div>
+                <div class="menu-item" data-app="files">
+                    <div class="menu-icon files-icon"></div>
+                    <span>File Explorer</span>
+                </div>
+                <div class="menu-item" data-app="settings">
+                    <div class="menu-icon settings-icon"></div>
+                    <span>Settings</span>
+                </div>
+                <div class="menu-separator"></div>
+                <div class="menu-item" id="shutdown">
+                    <div class="menu-icon shutdown-icon"></div>
+                    <span>Shutdown</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="apps.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
